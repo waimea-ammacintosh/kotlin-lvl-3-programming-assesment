@@ -1,6 +1,7 @@
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
+import java.util.Random
 import javax.swing.*
 
 /**
@@ -139,11 +140,27 @@ class MainWindow(val app: App) {
  * @param app the app state object
  */
 class InfoWindow(val owner: MainWindow, val app: App) {
-    private val dialog = JDialog(owner.frame, "DIALOG TITLE", false)
+    private val dialog = JDialog(owner.frame, "MiniMap", false)
     private val panel = JPanel().apply { layout = null }
 
-    private val infoLabel = JLabel()
-    private val resetButton = JButton("Reset")
+    private val location1Label = JLabel()
+    private val location2Label = JLabel()
+    private val location3Label = JLabel()
+    private val location4Label = JLabel()
+    private val location5Label = JLabel()
+    private val location6Label = JLabel()
+    private val location7Label = JLabel()
+    private val location8Label = JLabel()
+    private val location9Label = JLabel()
+    private val location10Label = JLabel()
+    private val location11Label = JLabel()
+    private val location12Label = JLabel()
+    private val location13Label = JLabel()
+    private val location14Label = JLabel()
+    private val location15Label = JLabel()
+    private val location16Label = JLabel()
+    private val player = JLabel()
+
 
     init {
         setupLayout()
@@ -154,18 +171,17 @@ class InfoWindow(val owner: MainWindow, val app: App) {
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(240, 180)
+        panel.preferredSize = java.awt.Dimension(340, 300)
 
-        infoLabel.setBounds(30, 30, 180, 60)
-        resetButton.setBounds(30, 120, 180, 30)
+        location1Label.setBounds(0, 0, 75, 75)
 
-        panel.add(infoLabel)
-        panel.add(resetButton)
+
+        panel.add(location1Label)
+
     }
 
     private fun setupStyles() {
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
-        resetButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
+        location1Label.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
     }
 
     private fun setupWindow() {
@@ -200,4 +216,64 @@ class InfoWindow(val owner: MainWindow, val app: App) {
 
         dialog.isVisible = true
     }
+}
+
+class Game(
+    val tiles: Array<Array<Location?>> = Array(4) { Array(4) { null } }
+) {
+
+    init {
+        val forest = Location("Forest", "A dark forest", "Coal", "Wood")
+        val farm = Location("Farm", "An old farm", "Wood", "Meat")
+        val castle = Location("Castle", "A large Castle", "Meat", "Torch")
+        val cave = Location("Cave", "A dark cave", "Torch", "Stone")
+        val road = Location("Road", "A stony Road", "Stone", "Coins")
+        val hall = Location("Hall", "A big Hall", "Coins", "Paper")
+        val postOffice = Location("Post Office", "The post office", "Paper", "Bag")
+        val huntersHouse = Location("Hunters House", "The house of the Hunter", "Bag", "Bow")
+        val armory = Location("Armory", "The Royal Armory", "Bow", "Armor")
+        val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
+        val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
+        val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
+        val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
+        val garden = Location("Garden", "A large garden", "Compost", "Carrots")
+        val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
+
+        addLocation(forest)
+        addLocation(farm)
+        addLocation(castle)
+        addLocation(cave)
+        addLocation(road)
+        addLocation(hall)
+        addLocation(postOffice)
+        addLocation(huntersHouse)
+        addLocation(armory)
+        addLocation(knightsHouse)
+        addLocation(museum)
+        addLocation(apothecary)
+        addLocation(composter)
+        addLocation(garden)
+        addLocation(mine)
+    }
+
+    private fun addLocation(location: Location) {
+        while (true) {
+            val randX = (0..3).random()
+            val randY = (0..3).random()
+            if (((randX and randY) != 0) && (tiles[randX][randY] == null)) {
+                tiles[randX][randY] = location
+                break
+            }
+        }
+    }
+
+}
+
+class Location(
+    val name: String,
+    val description: String,
+    val wantedResource: String,
+    val sellingResource: String
+) {
+
 }
