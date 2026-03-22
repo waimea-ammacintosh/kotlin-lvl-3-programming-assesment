@@ -1,17 +1,17 @@
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
-import java.util.Random
 import javax.swing.*
 
 /**
  * Application entry point
  */
 fun main() {
-    FlatMacDarkLaf.setup()          // Initialise the LAF
+    FlatMacDarkLaf.setup()                // Initialise the LAF
 
-    val app = App()                 // Get an app state object
-    val window = MainWindow(app)    // Spawn the UI, passing in the app state
+    val app = App()                       // Get an app state object
+    val game = Game()                     // Instantiate game object
+    val window = MainWindow(app, game)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
 }
@@ -46,15 +46,20 @@ class App {
  *
  * @param app the app state object
  */
-class MainWindow(val app: App) {
-    val frame = JFrame("WINDOW TITLE")
+class MainWindow(val app: App, val game: Game, val currentLocation: Location? = game.currentLocation) {
+
+    val frame = JFrame("GAME")
     private val panel = JPanel().apply { layout = null }
 
-    private val titleLabel = JLabel("APP TITLE")
+    private var nameLabel = JLabel()
 
-    private val infoLabel = JLabel()
-    private val clickButton = JButton("Click Me!")
-    private val infoButton = JButton("Info")
+    private val descriptionLabel = JLabel()
+    private val tradesLabel = JLabel()
+    private val tradeButton = JButton("Trade")
+    private val northButton = JButton("^")
+    private val southButton = JButton("v")
+    private val eastButton = JButton(">")
+    private val westButton = JButton("<")
 
     private val infoWindow = InfoWindow(this, app)      // Pass app state to dialog too
 
@@ -69,25 +74,36 @@ class MainWindow(val app: App) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
-        titleLabel.setBounds(30, 30, 340, 30)
-        infoLabel.setBounds(30, 90, 340, 30)
-        clickButton.setBounds(30, 150, 240, 40)
-        infoButton.setBounds(300, 150, 70, 40)
+        nameLabel.setBounds(30, 30, 340, 30)
+        descriptionLabel.setBounds(30, 90, 340, 30)
+        tradesLabel.setBounds(100, 110, 100, 100)
+        tradeButton.setBounds(30, 150, 100, 40)
+        northButton.setBounds(300, 150, 40, 40)
+        southButton.setBounds(300, 200, 40, 40)
+        eastButton.setBounds(250, 175, 40, 40)
+        westButton.setBounds(350, 175, 40, 40)
 
-        panel.add(titleLabel)
-        panel.add(infoLabel)
-        panel.add(clickButton)
-        panel.add(infoButton)
+        panel.add(nameLabel)
+        panel.add(descriptionLabel)
+        panel.add(tradeButton)
+        panel.add(northButton)
+        panel.add(southButton)
+        panel.add(eastButton)
+        panel.add(westButton)
     }
 
     private fun setupStyles() {
-        titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        nameLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
+        descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
-        clickButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        clickButton.background = Color(0xcc0055)
+        tradeButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        tradeButton.background = Color(0xcc0055)
 
-        infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        northButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        southButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        eastButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        westButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+
     }
 
     private fun setupWindow() {
@@ -113,8 +129,8 @@ class MainWindow(val app: App) {
     }
 
     fun updateUI() {
-        infoLabel.text = "User ${app.name} has ${app.score} points"
-
+        nameLabel.text = currentLocation!!.name
+        
         if (app.maxScoreReached()) {
             clickButton.text = "No More!"
             clickButton.isEnabled = false
@@ -171,9 +187,25 @@ class InfoWindow(val owner: MainWindow, val app: App) {
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(340, 300)
+        panel.preferredSize = java.awt.Dimension(340, 340)
 
-        location1Label.setBounds(0, 0, 75, 75)
+        location1Label.setBounds(0, 0, 85, 85)
+        location2Label.setBounds(85, 0, 85, 85)
+        location3Label.setBounds(170, 0, 85, 85)
+        location4Label.setBounds(225, 0, 85, 85)
+        location5Label.setBounds(0, 85, 85, 85)
+        location6Label.setBounds(85, 85, 85, 85)
+        location7Label.setBounds(170, 85, 85, 85)
+        location8Label.setBounds(225, 85, 85, 85)
+        location9Label.setBounds(0, 170, 85, 85)
+        location10Label.setBounds(85, 170, 85, 85)
+        location11Label.setBounds(170, 170, 85, 85)
+        location12Label.setBounds(225, 170, 85, 85)
+        location13Label.setBounds(0, 225, 85, 85)
+        location14Label.setBounds(85, 225, 85, 85)
+        location15Label.setBounds(170, 225, 85, 85)
+        location16Label.setBounds(225, 225, 85, 85)
+
 
 
         panel.add(location1Label)
@@ -192,7 +224,7 @@ class InfoWindow(val owner: MainWindow, val app: App) {
     }
 
     private fun setupActions() {
-        resetButton.addActionListener { handleResetClick() }
+
     }
 
     private fun handleResetClick() {
@@ -202,9 +234,7 @@ class InfoWindow(val owner: MainWindow, val app: App) {
 
     fun updateUI() {
         // Use app properties to display state
-        infoLabel.text = "<html>User: ${app.name}<br>Score: ${app.score} points"
 
-        resetButton.isEnabled = app.score > 0
     }
 
     fun show() {
@@ -219,10 +249,12 @@ class InfoWindow(val owner: MainWindow, val app: App) {
 }
 
 class Game(
-    val tiles: Array<Array<Location?>> = Array(4) { Array(4) { null } }
+    val tiles: Array<Array<Location?>> = Array(4) { Array(4) { null } },
+    var currentLocation: Location? = null
 ) {
 
     init {
+        val start = Location("Start", "The starting square", "None", "None")
         val forest = Location("Forest", "A dark forest", "Coal", "Wood")
         val farm = Location("Farm", "An old farm", "Wood", "Meat")
         val castle = Location("Castle", "A large Castle", "Meat", "Torch")
@@ -239,6 +271,8 @@ class Game(
         val garden = Location("Garden", "A large garden", "Compost", "Carrots")
         val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
+        tiles[0][0] = start
+        start.currentLocation = true
         addLocation(forest)
         addLocation(farm)
         addLocation(castle)
@@ -254,6 +288,8 @@ class Game(
         addLocation(composter)
         addLocation(garden)
         addLocation(mine)
+
+        currentLocation = start
     }
 
     private fun addLocation(location: Location) {
@@ -262,9 +298,25 @@ class Game(
             val randY = (0..3).random()
             if (((randX and randY) != 0) && (tiles[randX][randY] == null)) {
                 tiles[randX][randY] = location
+                if (randX == 0) {
+                    location.canMoveWest = false
+                }
+                if (randX == 3) {
+                    location.canMoveEast = false
+                }
+                if (randY == 0) {
+                    location.canMoveNorth = false
+                }
+                if (randY == 3) {
+                    location.canMoveSouth = false
+                }
                 break
             }
         }
+    }
+
+    fun move(direction: Char) {
+
     }
 
 }
@@ -273,7 +325,36 @@ class Location(
     val name: String,
     val description: String,
     val wantedResource: String,
-    val sellingResource: String
+    val sellingResource: String,
+    var visited: Boolean = false,
+    var traded: Boolean = false,
+    var canMoveNorth: Boolean = true,
+    var canMoveSouth: Boolean = true,
+    var canMoveEast: Boolean = true,
+    var canMoveWest: Boolean = true,
+    var currentLocation: Boolean = false
 ) {
+
+    fun move(direction: Char): Boolean {
+        when (direction) {
+            'N' -> if (canMoveNorth) {
+                return true
+            }
+
+            'S' -> if (canMoveSouth) {
+                return true
+            }
+
+            'E' -> if (canMoveEast) {
+                return true
+            }
+
+            'W' -> if (canMoveWest) {
+                return true
+            }
+        }
+        return false
+
+    }
 
 }
