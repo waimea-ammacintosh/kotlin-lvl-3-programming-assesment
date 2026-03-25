@@ -26,9 +26,7 @@ class Location(
     var canMoveEast: Boolean = true,
     var canMoveWest: Boolean = true,
     var currentLocation: Boolean = false
-) {
-
-}
+)
 
 class Game(
     val tiles: Array<Array<Location?>> = Array(4) { Array(4) { null } },
@@ -55,6 +53,8 @@ class Game(
 
         tiles[0][0] = start
         start.currentLocation = true
+        start.canMoveNorth = false
+        start.canMoveWest = false
         addLocation(forest)
         addLocation(farm)
         addLocation(castle)
@@ -78,7 +78,7 @@ class Game(
         while (true) {
             val randX = (0..3).random()
             val randY = (0..3).random()
-            if (((randX and randY) != 0) && (tiles[randX][randY] == null)) {
+            if ((randX != 0 || randY != 0) && (tiles[randX][randY] == null)) {
                 tiles[randX][randY] = location
                 if (randX == 0) {
                     location.canMoveWest = false
@@ -92,6 +92,7 @@ class Game(
                 if (randY == 3) {
                     location.canMoveSouth = false
                 }
+                println("${location.name} is at $randX, $randY, Move North: ${location.canMoveNorth}, Move South: ${location.canMoveSouth}, Move East: ${location.canMoveEast}, Move West: ${location.canMoveWest}")
                 break
             }
         }
@@ -111,11 +112,11 @@ class Game(
         }
         when (direction) {
             'N' -> if (currentLocation!!.canMoveNorth) {
-                currentLocation = tiles[xIndex][yIndex + 1]
+                currentLocation = tiles[xIndex][yIndex - 1]
             }
 
             'S' -> if (currentLocation!!.canMoveSouth) {
-                currentLocation = tiles[xIndex][yIndex - 1]
+                currentLocation = tiles[xIndex][yIndex + 1]
             }
 
             'E' -> if (currentLocation!!.canMoveEast) {
@@ -151,7 +152,7 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
     private val eastButton = JButton(">")
     private val westButton = JButton("<")
 
-    private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
+    private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
 
     init {
         setupLayout()
@@ -162,7 +163,7 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 220)
+        panel.preferredSize = java.awt.Dimension(400, 250)
 
         nameLabel.setBounds(30, 30, 340, 30)
         descriptionLabel.setBounds(30, 90, 340, 30)
@@ -170,8 +171,8 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
         tradeButton.setBounds(30, 150, 100, 40)
         northButton.setBounds(300, 150, 40, 40)
         southButton.setBounds(300, 200, 40, 40)
-        eastButton.setBounds(250, 175, 40, 40)
-        westButton.setBounds(350, 175, 40, 40)
+        eastButton.setBounds(350, 175, 40, 40)
+        westButton.setBounds(250, 175, 40, 40)
 
         panel.add(nameLabel)
         panel.add(descriptionLabel)
@@ -206,10 +207,16 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
 
     private fun setupActions() {
         tradeButton.addActionListener {}
-        northButton.addActionListener { game.move('N') }
-        southButton.addActionListener { game.move('S') }
-        eastButton.addActionListener { game.move('E') }
-        westButton.addActionListener { game.move('W') }
+        northButton.addActionListener { handleMove('N') }
+        southButton.addActionListener { handleMove('S') }
+        eastButton.addActionListener { handleMove('E') }
+        westButton.addActionListener { handleMove('W') }
+    }
+
+    private fun handleMove(c: Char) {
+        game.move(c)
+        updateUI()
+
     }
 
 
@@ -226,15 +233,23 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
 
         if (currentLocation.canMoveEast) {
             eastButton.isEnabled
+        } else {
+            eastButton.isEnabled = false
         }
         if (currentLocation.canMoveNorth) {
             northButton.isEnabled
+        } else {
+            northButton.isEnabled = false
         }
         if (currentLocation.canMoveWest) {
             westButton.isEnabled
+        } else {
+            westButton.isEnabled = false
         }
         if (currentLocation.canMoveSouth) {
             southButton.isEnabled
+        } else {
+            southButton.isEnabled = false
         }
 
 
@@ -252,7 +267,7 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
  * app state can be shown / updated from multiple places
  *
  * @param owner the parent frame, used to position and layer the dialog correctly
- * @param app the app state object
+ * @param game the app state object
  */
 class InfoWindow(val owner: MainWindow, val game: Game) {
     private val dialog = JDialog(owner.frame, "MiniMap", false)
