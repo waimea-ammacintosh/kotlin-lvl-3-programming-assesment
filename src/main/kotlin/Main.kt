@@ -12,6 +12,8 @@ fun main() {
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
 
     SwingUtilities.invokeLater { window.show() }
+//    SwingUtilities.invokeLater { InfoWindow.show() }
+
 }
 
 class Location(
@@ -78,18 +80,18 @@ class Game(
         while (true) {
             val randX = (0..3).random()
             val randY = (0..3).random()
-            if ((randX != 0 || randY != 0) && (tiles[randX][randY] == null)) {
-                tiles[randX][randY] = location
-                if (randX == 0) {
+            if ((randX != 0 || randY != 0) && (tiles[randY][randX] == null)) {
+                tiles[randY][randX] = location
+                if (randY == 0) {
                     location.canMoveWest = false
                 }
-                if (randX == 3) {
+                if (randY == 3) {
                     location.canMoveEast = false
                 }
-                if (randY == 0) {
+                if (randX == 0) {
                     location.canMoveNorth = false
                 }
-                if (randY == 3) {
+                if (randX == 3) {
                     location.canMoveSouth = false
                 }
                 println("${location.name} is at $randX, $randY, Move North: ${location.canMoveNorth}, Move South: ${location.canMoveSouth}, Move East: ${location.canMoveEast}, Move West: ${location.canMoveWest}")
@@ -112,21 +114,29 @@ class Game(
         }
         when (direction) {
             'N' -> if (currentLocation!!.canMoveNorth) {
-                currentLocation = tiles[xIndex][yIndex - 1]
+                currentLocation = tiles[(yIndex - 1)][xIndex]
+                println("Final:$xIndex ${yIndex - 1}")
             }
 
             'S' -> if (currentLocation!!.canMoveSouth) {
-                currentLocation = tiles[xIndex][yIndex + 1]
+                currentLocation = tiles[(yIndex + 1)][xIndex]
+                println("Final:$xIndex ${yIndex + 1}")
             }
 
             'E' -> if (currentLocation!!.canMoveEast) {
-                currentLocation = tiles[xIndex + 1][yIndex]
+                currentLocation = tiles[yIndex][(xIndex + 1)]
+                println("Final:${xIndex + 1} $yIndex")
             }
 
             'W' -> if (currentLocation!!.canMoveWest) {
-                currentLocation = tiles[xIndex - 1][yIndex]
+                currentLocation = tiles[yIndex][(xIndex - 1)]
+                println("Final:${xIndex - 1} $yIndex")
             }
         }
+    }
+
+    fun trade() {
+        println("Traded")
     }
 
 }
@@ -160,15 +170,16 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
         setupActions()
         setupWindow()
         updateUI()
+
     }
 
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 250)
 
-        nameLabel.setBounds(30, 30, 340, 30)
+        nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 30)
-        tradesLabel.setBounds(100, 110, 100, 100)
-        tradeButton.setBounds(30, 150, 100, 40)
+        tradesLabel.setBounds(30, 110, 150, 100)
+        tradeButton.setBounds(30, 190, 100, 40)
         northButton.setBounds(300, 150, 40, 40)
         southButton.setBounds(300, 200, 40, 40)
         eastButton.setBounds(350, 175, 40, 40)
@@ -176,6 +187,7 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
 
         panel.add(nameLabel)
         panel.add(descriptionLabel)
+        panel.add(tradesLabel)
         panel.add(tradeButton)
         panel.add(northButton)
         panel.add(southButton)
@@ -185,6 +197,7 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
 
     private fun setupStyles() {
         nameLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
+        tradesLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 18)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
         tradeButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
@@ -206,47 +219,48 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
     }
 
     private fun setupActions() {
-        tradeButton.addActionListener {}
+        tradeButton.addActionListener { handleTrade() }
         northButton.addActionListener { handleMove('N') }
         southButton.addActionListener { handleMove('S') }
         eastButton.addActionListener { handleMove('E') }
         westButton.addActionListener { handleMove('W') }
     }
 
-    private fun handleMove(c: Char) {
-        game.move(c)
+    private fun handleTrade() {
+        game.trade()
+        updateUI()
+    }
+
+    private fun handleMove(direction: Char) {
+        game.move(direction)
+        println(currentLocation!!.name)
         updateUI()
 
     }
 
-
-    private fun handleInfoClick() {
-        infoWindow.show()
-    }
-
     fun updateUI() {
-        nameLabel.text = currentLocation!!.name
-        descriptionLabel.text = currentLocation.description
-        tradesLabel.text = """Wants: ${currentLocation.wantedResource}
-            Selling: ${currentLocation.sellingResource}
+        nameLabel.text = game.currentLocation!!.name
+        descriptionLabel.text = game.currentLocation!!.description
+        tradesLabel.text = """<html><wrap>Wants: ${game.currentLocation!!.wantedResource}
+            Selling: ${game.currentLocation!!.sellingResource}
         """.trimMargin()
 
-        if (currentLocation.canMoveEast) {
+        if (game.currentLocation!!.canMoveEast) {
             eastButton.isEnabled
         } else {
             eastButton.isEnabled = false
         }
-        if (currentLocation.canMoveNorth) {
+        if (game.currentLocation!!.canMoveNorth) {
             northButton.isEnabled
         } else {
             northButton.isEnabled = false
         }
-        if (currentLocation.canMoveWest) {
+        if (game.currentLocation!!.canMoveWest) {
             westButton.isEnabled
         } else {
             westButton.isEnabled = false
         }
-        if (currentLocation.canMoveSouth) {
+        if (game.currentLocation!!.canMoveSouth) {
             southButton.isEnabled
         } else {
             southButton.isEnabled = false
