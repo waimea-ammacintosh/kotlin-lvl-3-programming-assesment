@@ -1,6 +1,7 @@
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
+import java.awt.Point
 import javax.swing.*
 
 /**
@@ -10,9 +11,9 @@ fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
-
+    val minimap = InfoWindow(window, game)
     SwingUtilities.invokeLater { window.show() }
-//    SwingUtilities.invokeLater { InfoWindow.show() }
+    SwingUtilities.invokeLater { minimap.show() }
 
 }
 
@@ -26,14 +27,14 @@ class Location(
     var canMoveNorth: Boolean = true,
     var canMoveSouth: Boolean = true,
     var canMoveEast: Boolean = true,
-    var canMoveWest: Boolean = true,
-    var currentLocation: Boolean = false
+    var canMoveWest: Boolean = true
 )
 
-class Game(
-    val tiles: Array<Array<Location?>> = Array(4) { Array(4) { null } },
-    var currentLocation: Location? = null
-) {
+class Game {
+    val mapSize = 4
+    val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
+    var currentCoords: Point
+    var currentLocation: Location?
 
     init {
         val start = Location("Start", "The starting square", "None", "None")
@@ -53,10 +54,8 @@ class Game(
         val garden = Location("Garden", "A large garden", "Compost", "Carrots")
         val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
-        tiles[0][0] = start
-        start.currentLocation = true
-        start.canMoveNorth = false
-        start.canMoveWest = false
+
+        addLocation(start, 0, 0)
         addLocation(forest)
         addLocation(farm)
         addLocation(castle)
@@ -73,66 +72,74 @@ class Game(
         addLocation(garden)
         addLocation(mine)
 
-        currentLocation = start
+        currentCoords = Point(0, 0)
+        currentLocation = getLocation()
     }
 
-    private fun addLocation(location: Location) {
+    private fun getLocation(): Location? {
+        return tiles[currentCoords.y][currentCoords.x]
+    }
+
+    private fun addLocation(
+        location: Location,
+        posX: Int = (0..<mapSize).random(),
+        posY: Int = (0..<mapSize).random()
+    ) {
+        var x = posX
+        var y = posY
+
         while (true) {
-            val randX = (0..3).random()
-            val randY = (0..3).random()
-            if ((randX != 0 || randY != 0) && (tiles[randY][randX] == null)) {
-                tiles[randY][randX] = location
-                if (randY == 0) {
-                    location.canMoveWest = false
-                }
-                if (randY == 3) {
-                    location.canMoveEast = false
-                }
-                if (randX == 0) {
+            if (tiles[y][x] == null) {
+                tiles[y][x] = location
+                if (y == 0) {
                     location.canMoveNorth = false
                 }
-                if (randX == 3) {
+                if (y == mapSize - 1) {
                     location.canMoveSouth = false
                 }
-                println("${location.name} is at $randX, $randY, Move North: ${location.canMoveNorth}, Move South: ${location.canMoveSouth}, Move East: ${location.canMoveEast}, Move West: ${location.canMoveWest}")
+                if (x == 0) {
+                    location.canMoveWest = false
+                }
+                if (x == mapSize - 1) {
+                    location.canMoveEast = false
+                }
+                println("${location.name} is at $x, $y, Move North: ${location.canMoveNorth}, Move South: ${location.canMoveSouth}, Move East: ${location.canMoveEast}, Move West: ${location.canMoveWest}")
                 break
+            } else {
+                x = (0..<mapSize).random()
+                y = (0..<mapSize).random()
             }
         }
     }
 
     fun move(direction: Char) {
-        var xIndex: Int = 0
-        var yIndex: Int = 0
+        currentLocation = getLocation()
+        println("Initial:${currentCoords.x} ${currentCoords.y}")
+        println("        ${currentLocation!!.name}")
+        println("        $direction")
+        println()
 
-        for ((rowIndex, row) in tiles.withIndex()) {
-            for ((colIndex, element) in row.withIndex()) {
-                if (element == currentLocation) {
-                    xIndex = rowIndex
-                    yIndex = colIndex
-                }
-            }
-        }
         when (direction) {
             'N' -> if (currentLocation!!.canMoveNorth) {
-                currentLocation = tiles[(yIndex - 1)][xIndex]
-                println("Final:$xIndex ${yIndex - 1}")
+                currentCoords.y -= 1
             }
 
             'S' -> if (currentLocation!!.canMoveSouth) {
-                currentLocation = tiles[(yIndex + 1)][xIndex]
-                println("Final:$xIndex ${yIndex + 1}")
+                currentCoords.y += 1
             }
 
             'E' -> if (currentLocation!!.canMoveEast) {
-                currentLocation = tiles[yIndex][(xIndex + 1)]
-                println("Final:${xIndex + 1} $yIndex")
+                currentCoords.x += 1
             }
 
             'W' -> if (currentLocation!!.canMoveWest) {
-                currentLocation = tiles[yIndex][(xIndex - 1)]
-                println("Final:${xIndex - 1} $yIndex")
+                currentCoords.x -= 1
             }
         }
+
+        currentLocation = getLocation()
+        println("Final:${currentCoords.x} ${currentCoords.y}")
+        println("      ${currentLocation!!.name}")
     }
 
     fun trade() {
@@ -147,7 +154,7 @@ class Game(
  *
  * @param game the game state object
  */
-class MainWindow(val game: Game, val currentLocation: Location? = game.currentLocation) {
+class MainWindow(val game: Game) {
 
     val frame = JFrame("GAME")
     private val panel = JPanel().apply { layout = null }
@@ -233,7 +240,6 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
 
     private fun handleMove(direction: Char) {
         game.move(direction)
-        println(currentLocation!!.name)
         updateUI()
 
     }
@@ -244,28 +250,10 @@ class MainWindow(val game: Game, val currentLocation: Location? = game.currentLo
         tradesLabel.text = """<html><wrap>Wants: ${game.currentLocation!!.wantedResource}
             Selling: ${game.currentLocation!!.sellingResource}
         """.trimMargin()
-
-        if (game.currentLocation!!.canMoveEast) {
-            eastButton.isEnabled
-        } else {
-            eastButton.isEnabled = false
-        }
-        if (game.currentLocation!!.canMoveNorth) {
-            northButton.isEnabled
-        } else {
-            northButton.isEnabled = false
-        }
-        if (game.currentLocation!!.canMoveWest) {
-            westButton.isEnabled
-        } else {
-            westButton.isEnabled = false
-        }
-        if (game.currentLocation!!.canMoveSouth) {
-            southButton.isEnabled
-        } else {
-            southButton.isEnabled = false
-        }
-
+        eastButton.isEnabled = game.currentLocation!!.canMoveEast
+        northButton.isEnabled = game.currentLocation!!.canMoveNorth
+        westButton.isEnabled = game.currentLocation!!.canMoveWest
+        southButton.isEnabled = game.currentLocation!!.canMoveSouth
 
         infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
     }
@@ -387,5 +375,3 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
         dialog.isVisible = true
     }
 }
-
-
