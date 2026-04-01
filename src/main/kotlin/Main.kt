@@ -3,6 +3,7 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.Point
 import javax.swing.*
+import javax.swing.border.Border
 
 /**
  * Application entry point
@@ -33,10 +34,35 @@ class Location(
 class Game {
     val mapSize = 4
     val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
+    val items = mutableListOf<String>()
+    val inventory = mutableListOf<String>()
     var currentCoords: Point
     var currentLocation: Location?
 
     init {
+        //initialize items list
+        items.add("Coal")
+        items.add("Wood")
+        items.add("Meat")
+        items.add("Torch")
+        items.add("Stone")
+        items.add("Coins")
+        items.add("Paper")
+        items.add("Bag")
+        items.add("Bow")
+        items.add("Armor")
+        items.add("Tapestry")
+        items.add("Fossil")
+        items.add("Herbs")
+        items.add("Compost")
+        items.add("Carrots")
+
+        //add one random item to inventory
+        val randItem = (0..<items.size).random()
+        inventory.add(items[randItem])
+        println(inventory)
+
+        //instantiate all the location objects
         val start = Location("Start", "The starting square", "None", "None")
         val forest = Location("Forest", "A dark forest", "Coal", "Wood")
         val farm = Location("Farm", "An old farm", "Wood", "Meat")
@@ -54,7 +80,7 @@ class Game {
         val garden = Location("Garden", "A large garden", "Compost", "Carrots")
         val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
-
+        // add locations to tiles list
         addLocation(start, 0, 0)
         addLocation(forest)
         addLocation(farm)
@@ -72,6 +98,7 @@ class Game {
         addLocation(garden)
         addLocation(mine)
 
+        //set current location
         currentCoords = Point(0, 0)
         currentLocation = getLocation()
     }
@@ -143,7 +170,10 @@ class Game {
     }
 
     fun trade() {
-        println("Traded")
+        if (currentLocation!!.wantedResource in inventory) {
+            inventory.add(currentLocation!!.sellingResource)
+            currentLocation!!.traded = true
+        }
     }
 
 }
@@ -163,6 +193,7 @@ class MainWindow(val game: Game) {
 
     private val descriptionLabel = JLabel()
     private val tradesLabel = JLabel()
+    private val tradeError = JLabel()
     private val tradeButton = JButton("Trade")
     private val northButton = JButton("^")
     private val southButton = JButton("v")
@@ -186,7 +217,8 @@ class MainWindow(val game: Game) {
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 30)
         tradesLabel.setBounds(30, 110, 150, 100)
-        tradeButton.setBounds(30, 190, 100, 40)
+        tradeButton.setBounds(30, 190, 150, 40)
+        tradeError.setBounds(30, 220, 150, 40)
         northButton.setBounds(300, 150, 40, 40)
         southButton.setBounds(300, 200, 40, 40)
         eastButton.setBounds(350, 175, 40, 40)
@@ -209,6 +241,7 @@ class MainWindow(val game: Game) {
 
         tradeButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         tradeButton.background = Color(0xcc0055)
+
 
         northButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         southButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
@@ -235,21 +268,35 @@ class MainWindow(val game: Game) {
 
     private fun handleTrade() {
         game.trade()
+        if (!game.currentLocation!!.traded) {
+            tradeError.isVisible = true
+        }
         updateUI()
     }
 
     private fun handleMove(direction: Char) {
         game.move(direction)
+        tradeError.isVisible = false
         updateUI()
 
     }
 
     fun updateUI() {
+        //set texts
         nameLabel.text = game.currentLocation!!.name
         descriptionLabel.text = game.currentLocation!!.description
         tradesLabel.text = """<html><wrap>Wants: ${game.currentLocation!!.wantedResource}
             Selling: ${game.currentLocation!!.sellingResource}
         """.trimMargin()
+        tradeButton.text = if (!game.currentLocation!!.traded) {
+            "Trade"
+        } else {
+            "Traded!"
+        }
+        tradeError.text = ("You dont have ${game.currentLocation!!.wantedResource}")
+
+        //enable/disable buttons
+        tradeButton.isEnabled = !game.currentLocation!!.traded
         eastButton.isEnabled = game.currentLocation!!.canMoveEast
         northButton.isEnabled = game.currentLocation!!.canMoveNorth
         westButton.isEnabled = game.currentLocation!!.canMoveWest
@@ -345,7 +392,24 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
     }
 
     private fun setupStyles() {
-        location1Label.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
+        location1Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location2Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location3Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location4Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location5Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location6Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location7Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location8Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location9Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location10Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location11Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location12Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location13Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location14Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location15Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+        location16Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
+
+
     }
 
     private fun setupWindow() {
