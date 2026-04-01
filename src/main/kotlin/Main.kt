@@ -13,8 +13,10 @@ fun main() {
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
     val minimap = InfoWindow(window, game)
+    val inventoryVisual = InventoryWindow(window)
     SwingUtilities.invokeLater { window.show() }
     SwingUtilities.invokeLater { minimap.show() }
+    SwingUtilities.invokeLater { inventoryVisual.show() }
 
 }
 
@@ -176,6 +178,16 @@ class Game {
         }
     }
 
+    fun printInventory(): String {
+        val text = buildString {
+            inventory.forEachIndexed { _, name ->
+                appendLine(name)
+            }
+        }
+        println(text)
+        return text
+    }
+
 }
 
 
@@ -201,6 +213,7 @@ class MainWindow(val game: Game) {
     private val westButton = JButton("<")
 
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
+    private val inventoryWindow = InventoryWindow(this)
 
     init {
         setupLayout()
@@ -302,12 +315,16 @@ class MainWindow(val game: Game) {
         westButton.isEnabled = game.currentLocation!!.canMoveWest
         southButton.isEnabled = game.currentLocation!!.canMoveSouth
 
-        infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
+        // Keep child dialog window UIs up-to-date too
+        infoWindow.updateUI()
+        inventoryWindow.updateUI(game.printInventory())
     }
 
     fun show() {
         frame.isVisible = true
     }
+
+
 }
 
 
@@ -438,4 +455,58 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
 
         dialog.isVisible = true
     }
+}
+
+class InventoryWindow(val owner: MainWindow) {
+    private val dialog = JDialog(owner.frame, "Inventory", false)
+    private val panel = JPanel().apply { layout = null }
+
+    private val inventory = JLabel()
+
+    init {
+        setupLayout()
+        setupStyles()
+        setupWindow()
+        updateUI(owner.game.printInventory())
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(200, 340)
+
+        inventory.setBounds(5, -160, 200, 340)
+
+        panel.add(inventory)
+
+    }
+
+    private fun setupStyles() {
+        inventory.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+    }
+
+    private fun setupWindow() {
+        dialog.isResizable = false                              // Can't resize
+        dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
+        dialog.contentPane = panel                              // Main content panel
+        dialog.pack()
+    }
+
+    fun updateUI(text: String) {
+        println("UI updated")
+        // Use app properties to display state
+
+        inventory.text = (text)
+        println(inventory.text)
+
+    }
+
+    fun show() {
+        val ownerBounds = owner.frame.bounds          // get location of the main window
+        dialog.setLocation(                           // Position next to main window
+            ownerBounds.x - ownerBounds.width + 190,
+            ownerBounds.y
+        )
+
+        dialog.isVisible = true
+    }
+
 }
