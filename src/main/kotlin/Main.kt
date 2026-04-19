@@ -11,11 +11,7 @@ fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
-    val minimap = InfoWindow(window, game)
-    val inventoryVisual = InventoryWindow(window, game)
     SwingUtilities.invokeLater { window.show() }
-    SwingUtilities.invokeLater { minimap.show() }
-    SwingUtilities.invokeLater { inventoryVisual.show() }
 
 }
 
@@ -108,6 +104,7 @@ class Game {
 
     private fun addMaze() {
         val mazeNum = (1..3).random()
+        println("Maze: $mazeNum")
         when (mazeNum) {
             1 -> initMaze1()
 
@@ -207,6 +204,7 @@ class Game {
                 if (x == mapSize - 1) {
                     location.canMoveEast = false
                 }
+                println("${location.name} is at $x $y")
                 break
             } else {
                 x = (0..<mapSize).random()
@@ -217,10 +215,6 @@ class Game {
 
     fun move(direction: Char) {
         currentLocation = getLocation()
-        println("Initial:${currentCoords.x} ${currentCoords.y}")
-        println("        ${currentLocation!!.name}")
-        println("        $direction")
-        println()
 
         when (direction) {
             'N' -> if (currentLocation!!.canMoveNorth) {
@@ -238,15 +232,14 @@ class Game {
             'W' -> if (currentLocation!!.canMoveWest) {
                 currentCoords.x -= 1
             }
-        }
 
+        }
         currentLocation = getLocation()
-        println("Final:${currentCoords.x} ${currentCoords.y}")
-        println("      ${currentLocation!!.name}")
+        println(currentLocation!!.name + currentCoords.x + currentCoords.y + currentLocation!!.canMoveNorth+ currentLocation!!.canMoveSouth+ currentLocation!!.canMoveEast+ currentLocation!!.canMoveWest)
     }
 
     fun trade() {
-        if (currentLocation!!.wantedResource in inventory) {
+        if (canTrade()) {
             inventory.add(currentLocation!!.sellingResource)
             currentLocation!!.traded = true
         }
@@ -259,6 +252,11 @@ class Game {
             }
         }
         return text
+    }
+
+    fun canTrade(): Boolean {
+        return currentLocation!!.wantedResource in inventory
+
     }
 
 }
@@ -288,12 +286,15 @@ class MainWindow(val game: Game) {
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
     private val inventoryWindow = InventoryWindow(this, game)
 
+
     init {
         setupLayout()
         setupStyles()
         setupActions()
         setupWindow()
         updateUI()
+        infoWindow.show()
+        inventoryWindow.show()
 
     }
 
@@ -375,14 +376,22 @@ class MainWindow(val game: Game) {
             Selling: ${game.currentLocation!!.sellingResource}
         """.trimMargin()
         tradeButton.text = if (!game.currentLocation!!.traded) {
+            if (game.canTrade()) {
             "Trade"
+                } else {
+                    "Can't Trade"
+                }
         } else {
             "Traded!"
         }
         tradeError.text = ("You dont have ${game.currentLocation!!.wantedResource}")
 
         //enable/disable buttons
-        tradeButton.isEnabled = !game.currentLocation!!.traded
+        tradeButton.isEnabled = if (!game.currentLocation!!.traded) {
+            game.canTrade()
+        } else {
+            false
+        }
         eastButton.isEnabled = game.currentLocation!!.canMoveEast
         northButton.isEnabled = game.currentLocation!!.canMoveNorth
         westButton.isEnabled = game.currentLocation!!.canMoveWest
@@ -546,7 +555,9 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(200, 340)
 
-        inventoryLabel.setBounds(0, -160, 200, 340)
+        inventoryLabel.setBounds(5, 5, 195, 335)
+        inventoryLabel.verticalAlignment = JLabel.TOP
+        inventoryLabel.horizontalAlignment = JLabel.LEFT
 
         panel.add(inventoryLabel)
 
@@ -561,15 +572,13 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
         dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
         dialog.contentPane = panel                              // Main content panel
         dialog.pack()
+
     }
 
     fun updateUI() {
-
         // Use game properties to display state
-
-        inventoryLabel.text = game.printInventory()
-        println(inventoryLabel.text)
-
+           val text = game.printInventory()
+           inventoryLabel.text = "<html>${text.replace("\n", "<br>")}</html>"
     }
 
     fun show() {
@@ -578,7 +587,6 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
             ownerBounds.x - ownerBounds.width + 190,
             ownerBounds.y
         )
-
         dialog.isVisible = true
     }
 
