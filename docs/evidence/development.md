@@ -10,20 +10,22 @@ The development log captures key moments in your application development:
 
 ---
 
-## Date: xx/0x/2026
+## Date: 19/04/2026
 
-Example description and notes. Example description and notes. Example description and notes. Example description and
-notes. Example description and notes. Example description and notes.
+today I decided to implement a maze feature in my game to add a layer of complexity to the map. I picked 3 different
+maze designs off the web to implement into my game, shown in this picture: ![maze ideas](screenshots/)
+I then implemented it using this code:
 
 ![example.png](screenshots/example.png)
 
 ---
 
-## Date: xx/xx/20xx
+## Date: 25/03/2026
 
-Example description and notes. Example description and notes. Example description and notes. Example description and
-notes. Example description and notes. Example description and notes.
-
+Today I managed to finalize my map generation. Initially I had problems with how the map was generating, as multiple
+locations could be put on the same tile of the locations array, so it would never work. However, I refined my generation
+function to be much simpler by adding a co-ordinate system for setting up the map. This also meant that I could initialize
+the starting square in a similar fashion, and is now much simpler
 ![example.png](screenshots/example.png)
 
 ---

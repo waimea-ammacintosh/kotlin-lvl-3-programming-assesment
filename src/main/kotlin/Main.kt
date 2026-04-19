@@ -3,7 +3,6 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.Point
 import javax.swing.*
-import javax.swing.border.Border
 
 /**
  * Application entry point
@@ -13,7 +12,7 @@ fun main() {
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
     val minimap = InfoWindow(window, game)
-    val inventoryVisual = InventoryWindow(window)
+    val inventoryVisual = InventoryWindow(window, game)
     SwingUtilities.invokeLater { window.show() }
     SwingUtilities.invokeLater { minimap.show() }
     SwingUtilities.invokeLater { inventoryVisual.show() }
@@ -103,6 +102,82 @@ class Game {
         //set current location
         currentCoords = Point(0, 0)
         currentLocation = getLocation()
+
+        addMaze()
+    }
+
+    private fun addMaze() {
+        val mazeNum = (1..3).random()
+        when (mazeNum) {
+            1 -> initMaze1()
+
+            2 -> initMaze2()
+
+            3 -> initMaze3()
+        }
+    }
+
+    private fun initMaze1() {
+        tiles[0][0]!!.canMoveSouth = false
+        tiles[0][1]!!.canMoveSouth = false
+        tiles[0][2]!!.canMoveSouth = false
+        tiles[1][0]!!.canMoveNorth = false
+        tiles[1][0]!!.canMoveSouth = false
+        tiles[1][1]!!.canMoveNorth = false
+        tiles[1][1]!!.canMoveSouth = false
+        tiles[1][2]!!.canMoveNorth = false
+        tiles[1][2]!!.canMoveEast = false
+        tiles[1][3]!!.canMoveWest = false
+        tiles[2][0]!!.canMoveNorth = false
+        tiles[2][0]!!.canMoveSouth = false
+        tiles[2][1]!!.canMoveNorth = false
+        tiles[2][1]!!.canMoveEast = false
+        tiles[2][2]!!.canMoveWest = false
+        tiles[2][3]!!.canMoveSouth = false
+        tiles[3][0]!!.canMoveNorth = false
+        tiles[3][3]!!.canMoveNorth = false
+    }
+
+    private fun initMaze2() {
+        tiles[0][1]!!.canMoveSouth = false
+        tiles[1][0]!!.canMoveSouth = false
+        tiles[1][1]!!.canMoveNorth = false
+        tiles[1][1]!!.canMoveEast = false
+        tiles[1][2]!!.canMoveWest = false
+        tiles[1][2]!!.canMoveEast = false
+        tiles[1][3]!!.canMoveSouth = false
+        tiles[1][3]!!.canMoveWest = false
+        tiles[2][0]!!.canMoveNorth = false
+        tiles[2][1]!!.canMoveEast = false
+        tiles[2][2]!!.canMoveWest = false
+        tiles[2][3]!!.canMoveSouth = false
+        tiles[2][3]!!.canMoveNorth = false
+        tiles[3][0]!!.canMoveEast = false
+        tiles[3][1]!!.canMoveWest = false
+        tiles[3][1]!!.canMoveEast = false
+        tiles[3][2]!!.canMoveWest = false
+        tiles[3][3]!!.canMoveNorth = false
+    }
+
+    private fun initMaze3() {
+        tiles[0][1]!!.canMoveSouth = false
+        tiles[0][2]!!.canMoveEast = false
+        tiles[0][3]!!.canMoveWest = false
+        tiles[1][0]!!.canMoveSouth = false
+        tiles[1][1]!!.canMoveNorth = false
+        tiles[1][1]!!.canMoveEast = false
+        tiles[1][1]!!.canMoveSouth = false
+        tiles[1][2]!!.canMoveWest = false
+        tiles[1][3]!!.canMoveSouth = false
+        tiles[2][0]!!.canMoveNorth = false
+        tiles[2][1]!!.canMoveNorth = false
+        tiles[2][1]!!.canMoveSouth = false
+        tiles[2][2]!!.canMoveEast = false
+        tiles[2][3]!!.canMoveNorth = false
+        tiles[2][3]!!.canMoveWest = false
+        tiles[3][0]!!.canMoveWest = false
+        tiles[3][1]!!.canMoveEast = false
+        tiles[3][1]!!.canMoveNorth = false
     }
 
     private fun getLocation(): Location? {
@@ -132,7 +207,6 @@ class Game {
                 if (x == mapSize - 1) {
                     location.canMoveEast = false
                 }
-                println("${location.name} is at $x, $y, Move North: ${location.canMoveNorth}, Move South: ${location.canMoveSouth}, Move East: ${location.canMoveEast}, Move West: ${location.canMoveWest}")
                 break
             } else {
                 x = (0..<mapSize).random()
@@ -184,7 +258,6 @@ class Game {
                 appendLine(name)
             }
         }
-        println(text)
         return text
     }
 
@@ -213,7 +286,7 @@ class MainWindow(val game: Game) {
     private val westButton = JButton("<")
 
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
-    private val inventoryWindow = InventoryWindow(this)
+    private val inventoryWindow = InventoryWindow(this, game)
 
     init {
         setupLayout()
@@ -317,7 +390,7 @@ class MainWindow(val game: Game) {
 
         // Keep child dialog window UIs up-to-date too
         infoWindow.updateUI()
-        inventoryWindow.updateUI(game.printInventory())
+        inventoryWindow.updateUI()
     }
 
     fun show() {
@@ -457,30 +530,30 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
     }
 }
 
-class InventoryWindow(val owner: MainWindow) {
+class InventoryWindow(val owner: MainWindow, val game: Game) {
     private val dialog = JDialog(owner.frame, "Inventory", false)
     private val panel = JPanel().apply { layout = null }
 
-    private val inventory = JLabel()
+    private val inventoryLabel = JLabel()
 
     init {
         setupLayout()
         setupStyles()
         setupWindow()
-        updateUI(owner.game.printInventory())
+        updateUI()
     }
 
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(200, 340)
 
-        inventory.setBounds(5, -160, 200, 340)
+        inventoryLabel.setBounds(0, -160, 200, 340)
 
-        panel.add(inventory)
+        panel.add(inventoryLabel)
 
     }
 
     private fun setupStyles() {
-        inventory.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        inventoryLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
 
     private fun setupWindow() {
@@ -490,12 +563,12 @@ class InventoryWindow(val owner: MainWindow) {
         dialog.pack()
     }
 
-    fun updateUI(text: String) {
-        println("UI updated")
-        // Use app properties to display state
+    fun updateUI() {
 
-        inventory.text = (text)
-        println(inventory.text)
+        // Use game properties to display state
+
+        inventoryLabel.text = game.printInventory()
+        println(inventoryLabel.text)
 
     }
 
