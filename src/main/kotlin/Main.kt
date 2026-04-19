@@ -29,11 +29,11 @@ class Location(
 )
 
 class Game {
-    val mapSize = 4
-    val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
-    val items = mutableListOf<String>()
-    val inventory = mutableListOf<String>()
-    var currentCoords: Point
+    private val mapSize = 4
+    private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
+    private val items = mutableListOf<String>()
+    private val inventory = mutableListOf<String>()
+    private var currentCoords: Point
     var currentLocation: Location?
 
     init {
@@ -99,6 +99,7 @@ class Game {
         currentCoords = Point(0, 0)
         currentLocation = getLocation()
 
+        //adds one of three random mazes to the area
         addMaze()
     }
 
@@ -235,7 +236,6 @@ class Game {
 
         }
         currentLocation = getLocation()
-        println(currentLocation!!.name + currentCoords.x + currentCoords.y + currentLocation!!.canMoveNorth+ currentLocation!!.canMoveSouth+ currentLocation!!.canMoveEast+ currentLocation!!.canMoveWest)
     }
 
     fun trade() {
@@ -267,7 +267,7 @@ class Game {
  *
  * @param game the game state object
  */
-class MainWindow(val game: Game) {
+class MainWindow(private val game: Game) {
 
     val frame = JFrame("GAME")
     private val panel = JPanel().apply { layout = null }
@@ -368,7 +368,7 @@ class MainWindow(val game: Game) {
 
     }
 
-    fun updateUI() {
+    private fun updateUI() {
         //set texts
         nameLabel.text = game.currentLocation!!.name
         descriptionLabel.text = game.currentLocation!!.description
@@ -417,7 +417,7 @@ class MainWindow(val game: Game) {
  * @param owner the parent frame, used to position and layer the dialog correctly
  * @param game the app state object
  */
-class InfoWindow(val owner: MainWindow, val game: Game) {
+class InfoWindow(private val owner: MainWindow, private val game: Game) {
     private val dialog = JDialog(owner.frame, "MiniMap", false)
     private val panel = JPanel().apply { layout = null }
 
@@ -507,8 +507,6 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
         location14Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
         location15Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
         location16Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
-
-
     }
 
     private fun setupWindow() {
@@ -534,15 +532,13 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
             ownerBounds.x + ownerBounds.width + 10,
             ownerBounds.y
         )
-
         dialog.isVisible = true
     }
 }
 
-class InventoryWindow(val owner: MainWindow, val game: Game) {
+class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     private val dialog = JDialog(owner.frame, "Inventory", false)
     private val panel = JPanel().apply { layout = null }
-
     private val inventoryLabel = JLabel()
 
     init {
@@ -553,14 +549,13 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(200, 340)
+        panel.preferredSize = java.awt.Dimension(200, 450)
 
-        inventoryLabel.setBounds(5, 5, 195, 335)
+        inventoryLabel.setBounds(5, 5, 190, 430)
         inventoryLabel.verticalAlignment = JLabel.TOP
         inventoryLabel.horizontalAlignment = JLabel.LEFT
 
         panel.add(inventoryLabel)
-
     }
 
     private fun setupStyles() {
@@ -572,7 +567,6 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
         dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
         dialog.contentPane = panel                              // Main content panel
         dialog.pack()
-
     }
 
     fun updateUI() {
@@ -589,5 +583,4 @@ class InventoryWindow(val owner: MainWindow, val game: Game) {
         )
         dialog.isVisible = true
     }
-
 }
