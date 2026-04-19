@@ -173,8 +173,8 @@ class Game {
         tiles[2][2]!!.canMoveEast = false
         tiles[2][3]!!.canMoveNorth = false
         tiles[2][3]!!.canMoveWest = false
-        tiles[3][0]!!.canMoveWest = false
-        tiles[3][1]!!.canMoveEast = false
+        tiles[3][0]!!.canMoveEast = false
+        tiles[3][1]!!.canMoveWest = false
         tiles[3][1]!!.canMoveNorth = false
     }
 
