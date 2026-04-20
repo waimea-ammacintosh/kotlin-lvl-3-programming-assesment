@@ -2,6 +2,7 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
 import java.awt.Point
+import javax.swing.Timer
 import javax.swing.*
 
 /**
@@ -12,6 +13,7 @@ fun main() {
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
     SwingUtilities.invokeLater { window.show() }
+    val cutscene = CutsceneWindow(game)
 
 }
 
@@ -33,6 +35,7 @@ class Game {
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
     private val inventory = mutableListOf<String>()
+    private val gameTimer = Timer(300000, null)
     private var currentCoords: Point
     var currentLocation: Location?
 
@@ -583,4 +586,57 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
         )
         dialog.isVisible = true
     }
+}
+
+class CutsceneWindow(private val game: Game) {
+    val frame = JFrame("GAME")
+    private val panel = JPanel().apply { layout = null }
+
+    private var nameLabel = JLabel()
+
+    private val catLabel = JLabel()
+    private val manLabel = JLabel()
+    private val handLabel = JLabel()
+    private val knifeLabel = JLabel()
+    private val speechLabel = JLabel()
+
+    init {
+        setupLayout()
+        setupWindow()
+        updateUI()
+        show()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(400, 250)
+
+        catLabel.setBounds(200, 125, 85, 85)
+        handLabel.setBounds(350, 125,85,85)
+        manLabel.setBounds(200, 125, 85, 85)
+        speechLabel.setBounds(350, 115,85,85)
+
+        panel.add(catLabel)
+        panel.add(handLabel)
+        panel.add(manLabel)
+        panel.add(speechLabel)
+
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false                           // Can't resize
+        frame.defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE  // cant close
+        frame.contentPane = panel                           // Define the main content
+        frame.pack()
+        frame.setLocationRelativeTo(null)
+    }
+
+    fun updateUI() {
+        // Use game properties to display state
+
+    }
+
+    fun show() {
+        frame.isVisible = true
+    }
+
 }
