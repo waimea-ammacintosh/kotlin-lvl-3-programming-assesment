@@ -16,15 +16,15 @@ Today I managed to finalize my map generation. Initially I had problems with how
 locations could be put on the same tile of the locations array, so it would never work. However, I refined my generation
 function to be much simpler by adding a co-ordinate system for setting up the map. This also meant that I could initialize
 the starting square in a similar fashion, and is now much simpler
-![example.png](screenshots/example.png)
+![map generation code](screenshots/map-generation.png)
 
 ---
 
 ## Date: 19/04/2026
 
 today I decided to implement a maze feature in my game to add a layer of complexity to the map. I picked 3 different
-maze designs off the web to implement into my game, shown in this picture: ![maze ideas](screenshots/)
-I then implemented it using this code:
+maze designs off the web to implement into my game, shown in this picture: ![maze ideas](screenshots/maze-ideas.png)
+I then implemented it using this code: ![example maze code](screenshots/maze-init-code.png)
 
 ![example.png](screenshots/example.png)
 
