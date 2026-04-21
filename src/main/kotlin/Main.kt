@@ -2,7 +2,6 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
 import java.awt.Point
-import java.awt.event.ActionListener
 import javax.swing.Timer
 import javax.swing.*
 
@@ -12,8 +11,8 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
+    val cutscene = IntroWindow(game)
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
-    val cutscene = CutsceneWindow(game)
     SwingUtilities.invokeLater { window.show() }
 
 
@@ -590,57 +589,33 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 }
 
-class CutsceneWindow(private val game: Game) {
-    val frame = JFrame("INSTRUCTIONS")
+class IntroWindow(private val game: Game) {
+    private val frame = JFrame("INSTRUCTIONS")
     private val panel = JPanel().apply { layout = null }
-    private val timer1 = Timer(5000, null)
-    private val timer2 = Timer(10000, null)
 
-    val catIcon = ImageIcon(ClassLoader.getSystemResource("graphics/cat.png")).scaled(120, 120)
-    val manIcon = ImageIcon(ClassLoader.getSystemResource("graphics/man.png")).scaled(120, 120)
-    val handIcon = ImageIcon(ClassLoader.getSystemResource("graphics/hand.png")).scaled(120, 120)
-    val knifeIcon = ImageIcon(ClassLoader.getSystemResource("graphics/cat.png")).scaled(120, 120)
-    val speechIcon = ImageIcon(ClassLoader.getSystemResource("graphics/speech.png")).scaled(120, 120)
-
-    private var instructionsLabel = JLabel()
+    private var infoLabel = JLabel()
     private var continueButton = JButton("Continue")
     private var startButton = JButton("Start")
 
-    private val catLabel = JLabel(catIcon)
-    private val manLabel = JLabel(manIcon)
-    private val handLabel = JLabel(handIcon)
-    private val knifeLabel = JLabel(knifeIcon)
-    private val speechLabel = JLabel(speechIcon)
 
     init {
         setupLayout()
+        setupStyles()
         setupWindow()
         setupActions()
         show()
         showInstructions()
     }
 
-    fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
-    ImageIcon(image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
-
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 250)
 
-        catLabel.setBounds(200, 125, 85, 85)
-        handLabel.setBounds(350, 125,85,85)
-        manLabel.setBounds(200, 125, 85, 85)
-        speechLabel.setBounds(350, 115,85,85)
-        knifeLabel.setBounds(200, 90, 85,85)
-        instructionsLabel.setBounds(5,5,390,130)
+
+        infoLabel.setBounds(5,5,390,130)
         continueButton.setBounds(370,200,50,30)
         startButton.setBounds(370,200,50,30)
 
-        panel.add(catLabel)
-        panel.add(handLabel)
-        panel.add(manLabel)
-        panel.add(speechLabel)
-        panel.add(knifeLabel)
-        panel.add(instructionsLabel)
+        panel.add(infoLabel)
         panel.add(continueButton)
 
     }
@@ -653,62 +628,37 @@ class CutsceneWindow(private val game: Game) {
         frame.setLocationRelativeTo(null)
     }
 
-    private fun setupActions() {
-        continueButton.addActionListener { scene1() }
-        startButton.addActionListener { finish() }
-        timer1.addActionListener { scene2() }
-        timer2.addActionListener { scene3() }
+    private fun setupStyles() {
+        infoLabel.font = Font(Font.SERIF, Font.PLAIN, 30)
+        continueButton.background = Color.DARK_GRAY
+
     }
 
-    private fun finish() {
-        frame.isVisible = false
+    private fun setupActions() {
+        continueButton.addActionListener { showContext() }
+        startButton.addActionListener { frame.isVisible = false }
 
     }
 
     private fun showInstructions() {
-        instructionsLabel.text = """To move, click the arrow button that corresponds to the direction you
+        infoLabel.text = """To move, click the arrow button that corresponds to the direction you
             wish to move. To trade, you need to find a square that wants a resource that you have available
             to trade. 
         """.trimMargin()
-        instructionsLabel.isVisible = true
+        infoLabel.isVisible = true
         continueButton.isVisible = true
 
     }
 
-    private fun scene1() {
-        instructionsLabel.isVisible = false
-        continueButton.isVisible = false
-        catLabel.isVisible = true
-        timer1.start()
+    private fun showContext() {
+        infoLabel.text = """The Evil man has stolen your precious Cat, and will kill it if you do not scour the
+            land to find the 16 resources he wants for his new house in 5 minutes.
+        """.trimMargin()
+        infoLabel.isVisible = true
+        startButton.isVisible = true
     }
 
-    private fun scene2() {
-        var handX = handLabel.x
-        var catX = catLabel.x
-        val timer1 = Timer(16) {
-            handX += 2
-            catX+=2
-            panel.repaint()
-        }
-        handLabel.isVisible = true
-        timer2.start()
-        timer1.start()
-
-    }
-
-    private fun scene3() {
-        catLabel.isVisible = false
-        handLabel.isVisible = false
-        manLabel.isVisible = true
-        speechLabel.isVisible = true
-        catLabel.setLocation(300, 200)
-        knifeLabel.isVisible = true
-        catLabel.isVisible = true
-
-
-    }
-
-    fun show() {
+    private fun show() {
         frame.isVisible = true
     }
 
