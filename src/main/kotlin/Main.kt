@@ -11,9 +11,11 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
-    val cutscene = IntroWindow(game)
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
-    SwingUtilities.invokeLater { window.show() }
+    val cutscene = IntroWindow(game, window)
+    SwingUtilities.invokeLater { cutscene.start() }
+
+//    SwingUtilities.invokeLater { window.show() }
 
 
 }
@@ -276,6 +278,9 @@ class MainWindow(private val game: Game) {
     val frame = JFrame("GAME")
     private val panel = JPanel().apply { layout = null }
 
+    private val timerIcon = ImageIcon(ClassLoader.getSystemResource("images/timer.png")).scaled(100, 340)
+    private val knifeIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
+
     private var nameLabel = JLabel()
 
     private val descriptionLabel = JLabel()
@@ -286,6 +291,9 @@ class MainWindow(private val game: Game) {
     private val southButton = JButton("v")
     private val eastButton = JButton(">")
     private val westButton = JButton("<")
+    private val timerLabel = JLabel(timerIcon)
+    private val knifeLabel = JLabel(knifeIcon)
+    val tickTimer = Timer(1000, null)
 
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
     private val inventoryWindow = InventoryWindow(this, game)
@@ -297,13 +305,17 @@ class MainWindow(private val game: Game) {
         setupActions()
         setupWindow()
         updateUI()
+        tickTimer.start()
         infoWindow.show()
         inventoryWindow.show()
 
     }
 
+    private fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
+        ImageIcon(image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
+
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 250)
+        panel.preferredSize = java.awt.Dimension(500, 350)
 
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 30)
@@ -314,6 +326,8 @@ class MainWindow(private val game: Game) {
         southButton.setBounds(300, 200, 40, 40)
         eastButton.setBounds(350, 175, 40, 40)
         westButton.setBounds(250, 175, 40, 40)
+        timerLabel.setBounds(395, 5, 100, 340)
+        knifeLabel.setBounds(450, 5, 50, 70)
 
         panel.add(nameLabel)
         panel.add(descriptionLabel)
@@ -323,6 +337,8 @@ class MainWindow(private val game: Game) {
         panel.add(southButton)
         panel.add(eastButton)
         panel.add(westButton)
+        panel.add(knifeLabel)
+        panel.add(timerLabel)
     }
 
     private fun setupStyles() {
@@ -355,6 +371,12 @@ class MainWindow(private val game: Game) {
         southButton.addActionListener { handleMove('S') }
         eastButton.addActionListener { handleMove('E') }
         westButton.addActionListener { handleMove('W') }
+        tickTimer.addActionListener { handleKnifeMove() }
+    }
+
+    private fun handleKnifeMove() {
+        val y = knifeLabel.y
+        knifeLabel.setLocation(450, y + (15 / 17))
     }
 
     private fun handleTrade() {
@@ -381,10 +403,10 @@ class MainWindow(private val game: Game) {
         """.trimMargin()
         tradeButton.text = if (!game.currentLocation!!.traded) {
             if (game.canTrade()) {
-            "Trade"
-                } else {
-                    "Can't Trade"
-                }
+                "Trade"
+            } else {
+                "Can't Trade"
+            }
         } else {
             "Traded!"
         }
@@ -575,8 +597,8 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
 
     fun updateUI() {
         // Use game properties to display state
-           val text = game.printInventory()
-           inventoryLabel.text = "<html>${text.replace("\n", "<br>")}</html>"
+        val text = game.printInventory()
+        inventoryLabel.text = "<html>${text.replace("\n", "<br>")}</html>"
     }
 
     fun show() {
@@ -589,7 +611,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 }
 
-class IntroWindow(private val game: Game) {
+class IntroWindow(private val game: Game, private val window: MainWindow) {
     private val frame = JFrame("INSTRUCTIONS")
     private val panel = JPanel().apply { layout = null }
 
@@ -603,20 +625,20 @@ class IntroWindow(private val game: Game) {
         setupStyles()
         setupWindow()
         setupActions()
-        show()
-        showInstructions()
+
     }
 
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 250)
 
 
-        infoLabel.setBounds(5,5,390,130)
-        continueButton.setBounds(370,200,50,30)
-        startButton.setBounds(370,200,50,30)
+        infoLabel.setBounds(5, 5, 390, 200)
+        continueButton.setBounds(260, 200, 100, 40)
+        startButton.setBounds(260, 200, 90, 40)
 
         panel.add(infoLabel)
         panel.add(continueButton)
+        panel.add(startButton)
 
     }
 
@@ -629,19 +651,23 @@ class IntroWindow(private val game: Game) {
     }
 
     private fun setupStyles() {
-        infoLabel.font = Font(Font.SERIF, Font.PLAIN, 30)
+        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        continueButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
+        startButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
         continueButton.background = Color.DARK_GRAY
+        startButton.background = Color.DARK_GRAY
 
     }
 
     private fun setupActions() {
         continueButton.addActionListener { showContext() }
-        startButton.addActionListener { frame.isVisible = false }
+        startButton.addActionListener { window.show(); frame.isVisible = false }
 
     }
 
     private fun showInstructions() {
-        infoLabel.text = """To move, click the arrow button that corresponds to the direction you
+        startButton.isVisible = false
+        infoLabel.text = """<html><wrap>To move, click the arrow button that corresponds to the direction you
             wish to move. To trade, you need to find a square that wants a resource that you have available
             to trade. 
         """.trimMargin()
@@ -651,15 +677,18 @@ class IntroWindow(private val game: Game) {
     }
 
     private fun showContext() {
-        infoLabel.text = """The Evil man has stolen your precious Cat, and will kill it if you do not scour the
+        continueButton.isVisible = false
+        infoLabel.text =
+            """<html><wrap>The Evil man has stolen your precious Cat, and will kill it if you do not scour the
             land to find the 16 resources he wants for his new house in 5 minutes.
         """.trimMargin()
         infoLabel.isVisible = true
         startButton.isVisible = true
     }
 
-    private fun show() {
+    fun start() {
         frame.isVisible = true
+        showInstructions()
     }
 
 }
