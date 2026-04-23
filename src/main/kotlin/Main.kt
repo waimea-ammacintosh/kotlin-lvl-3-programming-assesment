@@ -38,9 +38,29 @@ class Game {
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
     private val inventory = mutableListOf<String>()
-    private val gameTimer = Timer(300000, null)
+    val gameTimer = Timer(300000, null)
     private var currentCoords: Point
     var currentLocation: Location?
+    var hasWon = false
+    var hasLost = false
+
+    //instantiate all the location objects
+    val start = Location("Start", "The starting square", "Everything", "Cat")
+    val forest = Location("Forest", "A dark forest", "Coal", "Wood")
+    val farm = Location("Farm", "An old farm", "Wood", "Meat")
+    val castle = Location("Castle", "A large Castle", "Meat", "Torch")
+    val cave = Location("Cave", "A dark cave", "Torch", "Stone")
+    val road = Location("Road", "A stony Road", "Stone", "Coins")
+    val hall = Location("Hall", "A big Hall", "Coins", "Paper")
+    val postOffice = Location("Post Office", "The post office", "Paper", "Bag")
+    val huntersHouse = Location("Hunters House", "The house of the Hunter", "Bag", "Bow")
+    val armory = Location("Armory", "The Royal Armory", "Bow", "Armor")
+    val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
+    val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
+    val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
+    val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
+    val garden = Location("Garden", "A large garden", "Compost", "Carrots")
+    val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
     init {
         //initialize items list
@@ -65,23 +85,6 @@ class Game {
         inventory.add(items[randItem])
         println(inventory)
 
-        //instantiate all the location objects
-        val start = Location("Start", "The starting square", "None", "None")
-        val forest = Location("Forest", "A dark forest", "Coal", "Wood")
-        val farm = Location("Farm", "An old farm", "Wood", "Meat")
-        val castle = Location("Castle", "A large Castle", "Meat", "Torch")
-        val cave = Location("Cave", "A dark cave", "Torch", "Stone")
-        val road = Location("Road", "A stony Road", "Stone", "Coins")
-        val hall = Location("Hall", "A big Hall", "Coins", "Paper")
-        val postOffice = Location("Post Office", "The post office", "Paper", "Bag")
-        val huntersHouse = Location("Hunters House", "The house of the Hunter", "Bag", "Bow")
-        val armory = Location("Armory", "The Royal Armory", "Bow", "Armor")
-        val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
-        val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
-        val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
-        val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
-        val garden = Location("Garden", "A large garden", "Compost", "Carrots")
-        val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
         // add locations to tiles list
         addLocation(start, 0, 0)
@@ -107,7 +110,11 @@ class Game {
 
         //adds one of three random mazes to the area
         addMaze()
+
+        //adds action listener to timer
+        gameTimer.addActionListener { hasLost = true }
     }
+
 
     private fun addMaze() {
         val mazeNum = (1..3).random()
@@ -265,6 +272,11 @@ class Game {
 
     }
 
+    fun handleWin() {
+        if (currentLocation == start && inventory.size == 15) {
+            hasWon = true
+        }
+    }
 }
 
 
@@ -280,6 +292,8 @@ class MainWindow(private val game: Game) {
 
     private val timerIcon = ImageIcon(ClassLoader.getSystemResource("images/timer.png")).scaled(100, 340)
     private val knifeIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
+    private val winIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
+    private val loseIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
 
     private var nameLabel = JLabel()
 
@@ -293,7 +307,7 @@ class MainWindow(private val game: Game) {
     private val westButton = JButton("<")
     private val timerLabel = JLabel(timerIcon)
     private val knifeLabel = JLabel(knifeIcon)
-    val tickTimer = Timer(1000, null)
+    val tickTimer = Timer(882, null)
 
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
     private val inventoryWindow = InventoryWindow(this, game)
@@ -305,7 +319,6 @@ class MainWindow(private val game: Game) {
         setupActions()
         setupWindow()
         updateUI()
-        tickTimer.start()
         infoWindow.show()
         inventoryWindow.show()
 
@@ -327,7 +340,7 @@ class MainWindow(private val game: Game) {
         eastButton.setBounds(350, 175, 40, 40)
         westButton.setBounds(250, 175, 40, 40)
         timerLabel.setBounds(395, 5, 100, 340)
-        knifeLabel.setBounds(450, 5, 50, 70)
+        knifeLabel.setBounds(450, -62, 50, 70)
 
         panel.add(nameLabel)
         panel.add(descriptionLabel)
@@ -376,7 +389,7 @@ class MainWindow(private val game: Game) {
 
     private fun handleKnifeMove() {
         val y = knifeLabel.y
-        knifeLabel.setLocation(450, y + (15 / 17))
+        knifeLabel.setLocation(450, y + 1)
     }
 
     private fun handleTrade() {
@@ -395,6 +408,13 @@ class MainWindow(private val game: Game) {
     }
 
     private fun updateUI() {
+        //check for game end
+        if (game.hasWon) {
+            handleWin()
+        }
+        if (game.hasLost) {
+            handleLose()
+        }
         //set texts
         nameLabel.text = game.currentLocation!!.name
         descriptionLabel.text = game.currentLocation!!.description
@@ -426,6 +446,14 @@ class MainWindow(private val game: Game) {
         // Keep child dialog window UIs up-to-date too
         infoWindow.updateUI()
         inventoryWindow.updateUI()
+    }
+
+    private fun handleLose() {
+        winScreen.isVisible() = true
+    }
+
+    private fun handleWin() {
+        TODO("Not yet implemented")
     }
 
     fun show() {
@@ -661,7 +689,12 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
 
     private fun setupActions() {
         continueButton.addActionListener { showContext() }
-        startButton.addActionListener { window.show(); frame.isVisible = false }
+        startButton.addActionListener {
+            frame.isVisible = false
+            window.show()
+            window.tickTimer.start()
+            game.gameTimer.start()
+        }
 
     }
 
