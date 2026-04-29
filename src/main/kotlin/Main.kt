@@ -272,8 +272,9 @@ class Game {
 
     }
 
-    fun handleWin() {
+    fun checkWin() {
         if (currentLocation == start && inventory.size == 15) {
+            println("WIN")
             hasWon = true
         }
     }
@@ -292,8 +293,8 @@ class MainWindow(private val game: Game) {
 
     private val timerIcon = ImageIcon(ClassLoader.getSystemResource("images/timer.png")).scaled(100, 340)
     private val knifeIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
-    private val winIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
-    private val loseIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
+    private val winIcon = ImageIcon(ClassLoader.getSystemResource("images/winscreen.png")).scaled(500, 350)
+    private val loseIcon = ImageIcon(ClassLoader.getSystemResource("images/losescreen.png")).scaled(500, 350)
 
     private var nameLabel = JLabel()
 
@@ -307,7 +308,10 @@ class MainWindow(private val game: Game) {
     private val westButton = JButton("<")
     private val timerLabel = JLabel(timerIcon)
     private val knifeLabel = JLabel(knifeIcon)
+    private val winScreen = JLabel(winIcon)
+    private val loseScreen = JLabel(loseIcon)
     val tickTimer = Timer(882, null)
+    val checkTimer = Timer(10, null)
 
     private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
     private val inventoryWindow = InventoryWindow(this, game)
@@ -341,6 +345,8 @@ class MainWindow(private val game: Game) {
         westButton.setBounds(250, 175, 40, 40)
         timerLabel.setBounds(395, 5, 100, 340)
         knifeLabel.setBounds(450, -62, 50, 70)
+        winScreen.setBounds(0, 0, 500, 350)
+        loseScreen.setBounds(0, 0, 500, 350)
 
         panel.add(nameLabel)
         panel.add(descriptionLabel)
@@ -352,6 +358,9 @@ class MainWindow(private val game: Game) {
         panel.add(westButton)
         panel.add(knifeLabel)
         panel.add(timerLabel)
+        panel.add(winScreen)
+        panel.add(loseScreen)
+
     }
 
     private fun setupStyles() {
@@ -367,6 +376,9 @@ class MainWindow(private val game: Game) {
         southButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         eastButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         westButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+
+        winScreen.isVisible = false
+        loseScreen.isVisible = false
 
     }
 
@@ -385,6 +397,18 @@ class MainWindow(private val game: Game) {
         eastButton.addActionListener { handleMove('E') }
         westButton.addActionListener { handleMove('W') }
         tickTimer.addActionListener { handleKnifeMove() }
+        checkTimer.addActionListener { handleGameEndCheck() }
+    }
+
+    private fun handleGameEndCheck() {
+        game.checkWin()
+        //check for game end
+        if (game.hasWon) {
+            handleWin()
+        }
+        if (game.hasLost) {
+            handleLose()
+        }
     }
 
     private fun handleKnifeMove() {
@@ -408,13 +432,7 @@ class MainWindow(private val game: Game) {
     }
 
     private fun updateUI() {
-        //check for game end
-        if (game.hasWon) {
-            handleWin()
-        }
-        if (game.hasLost) {
-            handleLose()
-        }
+
         //set texts
         nameLabel.text = game.currentLocation!!.name
         descriptionLabel.text = game.currentLocation!!.description
@@ -449,11 +467,12 @@ class MainWindow(private val game: Game) {
     }
 
     private fun handleLose() {
-        winScreen.isVisible() = true
+        loseScreen.isVisible = true
+
     }
 
     private fun handleWin() {
-        TODO("Not yet implemented")
+        winScreen.isVisible = true
     }
 
     fun show() {
