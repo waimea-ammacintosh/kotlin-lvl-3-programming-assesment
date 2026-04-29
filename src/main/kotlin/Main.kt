@@ -20,6 +20,10 @@ fun main() {
 
 }
 
+fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
+    ImageIcon(image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
+
+
 class Location(
     val name: String,
     val description: String,
@@ -38,29 +42,29 @@ class Game {
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
     private val inventory = mutableListOf<String>()
-    val gameTimer = Timer(300000, null)
-    private var currentCoords: Point
+    private val gameTimer = Timer(300000, null)
+    var currentCoords: Point
     var currentLocation: Location?
     var hasWon = false
     var hasLost = false
 
     //instantiate all the location objects
-    val start = Location("Start", "The starting square", "Everything", "Cat")
-    val forest = Location("Forest", "A dark forest", "Coal", "Wood")
-    val farm = Location("Farm", "An old farm", "Wood", "Meat")
-    val castle = Location("Castle", "A large Castle", "Meat", "Torch")
-    val cave = Location("Cave", "A dark cave", "Torch", "Stone")
-    val road = Location("Road", "A stony Road", "Stone", "Coins")
-    val hall = Location("Hall", "A big Hall", "Coins", "Paper")
-    val postOffice = Location("Post Office", "The post office", "Paper", "Bag")
-    val huntersHouse = Location("Hunters House", "The house of the Hunter", "Bag", "Bow")
-    val armory = Location("Armory", "The Royal Armory", "Bow", "Armor")
-    val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
-    val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
-    val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
-    val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
-    val garden = Location("Garden", "A large garden", "Compost", "Carrots")
-    val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
+    private val start = Location("Start", "The starting square", "Everything", "Cat", visited = true)
+    private val forest = Location("Forest", "A dark forest", "Coal", "Wood")
+    private val farm = Location("Farm", "An old farm", "Wood", "Meat")
+    private val castle = Location("Castle", "A large Castle", "Meat", "Torch")
+    private val cave = Location("Cave", "A dark cave", "Torch", "Stone")
+    private val road = Location("Road", "A stony Road", "Stone", "Coins")
+    private val hall = Location("Hall", "A big Hall", "Coins", "Paper")
+    private val postOffice = Location("Post Office", "The post office", "Paper", "Bag")
+    private val huntersHouse = Location("Hunters House", "The house of the Hunter", "Bag", "Bow")
+    private val armory = Location("Armory", "The Royal Armory", "Bow", "Armor")
+    private val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
+    private val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
+    private val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
+    private val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
+    private val garden = Location("Garden", "A large garden", "Compost", "Carrots")
+    private val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
     init {
         //initialize items list
@@ -249,6 +253,9 @@ class Game {
 
         }
         currentLocation = getLocation()
+        if (!currentLocation!!.visited) {
+            currentLocation!!.visited = true
+        }
     }
 
     fun trade() {
@@ -277,6 +284,14 @@ class Game {
             println("WIN")
             hasWon = true
         }
+    }
+
+    fun stopTimer() {
+        gameTimer.stop()
+    }
+
+    fun startTimers() {
+        gameTimer.start()
     }
 }
 
@@ -328,15 +343,13 @@ class MainWindow(private val game: Game) {
 
     }
 
-    private fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
-        ImageIcon(image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
 
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(500, 350)
 
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 30)
-        tradesLabel.setBounds(30, 110, 150, 100)
+        tradesLabel.setBounds(30, 110, 200, 100)
         tradeButton.setBounds(30, 190, 150, 40)
         tradeError.setBounds(30, 220, 150, 40)
         northButton.setBounds(300, 150, 40, 40)
@@ -404,11 +417,42 @@ class MainWindow(private val game: Game) {
         game.checkWin()
         //check for game end
         if (game.hasWon) {
-            handleWin()
+            stopTimers()
+            cleanWindow()
+            winScreen.isVisible = true
         }
         if (game.hasLost) {
-            handleLose()
+            stopTimers()
+            cleanWindow()
+            loseScreen.isVisible = true
         }
+    }
+
+    private fun cleanWindow() {
+        nameLabel.isVisible = false
+        descriptionLabel.isVisible = false
+        tradesLabel.isVisible = false
+        tradeButton.isVisible = false
+        northButton.isVisible = false
+        southButton.isVisible = false
+        eastButton.isVisible = false
+        westButton.isVisible = false
+        knifeLabel.isVisible = false
+        timerLabel.isVisible = false
+
+    }
+
+    fun startTimers() {
+        checkTimer.start()
+        tickTimer.start()
+
+    }
+
+    private fun stopTimers() {
+        checkTimer.stop()
+        tickTimer.stop()
+        game.stopTimer()
+
     }
 
     private fun handleKnifeMove() {
@@ -466,15 +510,6 @@ class MainWindow(private val game: Game) {
         inventoryWindow.updateUI()
     }
 
-    private fun handleLose() {
-        loseScreen.isVisible = true
-
-    }
-
-    private fun handleWin() {
-        winScreen.isVisible = true
-    }
-
     fun show() {
         frame.isVisible = true
     }
@@ -494,6 +529,8 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
     private val dialog = JDialog(owner.frame, "MiniMap", false)
     private val panel = JPanel().apply { layout = null }
 
+    private val playerIcon = ImageIcon(ClassLoader.getSystemResource("images/player.png")).scaled(25, 25)
+
     private val location1Label = JLabel()
     private val location2Label = JLabel()
     private val location3Label = JLabel()
@@ -510,7 +547,7 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
     private val location14Label = JLabel()
     private val location15Label = JLabel()
     private val location16Label = JLabel()
-    private val player = JLabel()
+    private val player = JLabel(playerIcon)
 
 
     init {
@@ -527,19 +564,20 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
         location1Label.setBounds(0, 0, 85, 85)
         location2Label.setBounds(85, 0, 85, 85)
         location3Label.setBounds(170, 0, 85, 85)
-        location4Label.setBounds(225, 0, 85, 85)
+        location4Label.setBounds(255, 0, 85, 85)
         location5Label.setBounds(0, 85, 85, 85)
         location6Label.setBounds(85, 85, 85, 85)
         location7Label.setBounds(170, 85, 85, 85)
-        location8Label.setBounds(225, 85, 85, 85)
+        location8Label.setBounds(255, 85, 85, 85)
         location9Label.setBounds(0, 170, 85, 85)
         location10Label.setBounds(85, 170, 85, 85)
         location11Label.setBounds(170, 170, 85, 85)
-        location12Label.setBounds(225, 170, 85, 85)
-        location13Label.setBounds(0, 225, 85, 85)
-        location14Label.setBounds(85, 225, 85, 85)
-        location15Label.setBounds(170, 225, 85, 85)
-        location16Label.setBounds(225, 225, 85, 85)
+        location12Label.setBounds(255, 170, 85, 85)
+        location13Label.setBounds(0, 255, 85, 85)
+        location14Label.setBounds(85, 255, 85, 85)
+        location15Label.setBounds(170, 255, 85, 85)
+        location16Label.setBounds(255, 255, 85, 85)
+        player.setBounds(0, 0, 25, 25)
 
 
 
@@ -559,6 +597,7 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
         panel.add(location14Label)
         panel.add(location15Label)
         panel.add(location16Label)
+        panel.add(player)
 
 
     }
@@ -595,7 +634,12 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
 
 
     fun updateUI() {
-        // Use app properties to display state
+        // Use game properties to display state
+        val x = game.currentCoords.x
+        val newX = (x + 1) * 85
+        val y = game.currentCoords.x
+        val newY = (y + 1) * 85
+        player.setLocation(newX, newY)
 
     }
 
@@ -711,10 +755,15 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
         startButton.addActionListener {
             frame.isVisible = false
             window.show()
-            window.tickTimer.start()
-            game.gameTimer.start()
+            startTimers()
+
         }
 
+    }
+
+    private fun startTimers() {
+        window.startTimers()
+        game.startTimers()
     }
 
     private fun showInstructions() {
