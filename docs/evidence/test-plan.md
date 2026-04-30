@@ -50,7 +50,8 @@ I will do 3 valid trades to test if trading works.
 
 ### Expected Test Result
 
-When I trade an item that a square wants, and I also have in my inventory, for an item a square is selling, it should give me that item.
+When I trade an item that a square wants, and I also have in my inventory, for an item a square is selling, it should add that item to my inventory
+and update the UI to show that I have already traded with that location.
 
 ---
 
@@ -60,11 +61,11 @@ I will test to see how my program handles invalid trades (i.e. trade an item I d
 
 ### Test Data To Use
 
-I will try trade 3 times where I don't have the item they want, and I will try trade at 3 squares I have already traded at.
+I will try trade 3 times when I don't have the item they want, and I will try trade at 3 squares I have already traded at.
 
 ### Expected Test Result
 
-None of these trades should work.
+None of these trades should work, the UI should not update, and I should gain nothing into my inventory.
 
 ---
 

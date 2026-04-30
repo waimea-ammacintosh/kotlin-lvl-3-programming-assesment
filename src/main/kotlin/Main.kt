@@ -1,3 +1,14 @@
+/*************************************************************
+ *
+ * Save the Cat
+ *
+ * A game made for NCEA level 3 A.S. 91906
+ *
+ * By: Aaron Macintosh
+ *
+ * Date:
+ *************************************************************/
+
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
 import java.awt.Font
@@ -14,16 +25,34 @@ fun main() {
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
     val cutscene = IntroWindow(game, window)
     SwingUtilities.invokeLater { cutscene.start() }
-
-//    SwingUtilities.invokeLater { window.show() }
-
-
 }
 
+/**
+ * Scales an image to the selected size using
+ * SCALE_SMOOTH.
+ *
+ * @param width The width of the scaled image.
+ * @param height The height of the scaled image.
+ */
 fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
     ImageIcon(image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
 
-
+/**
+ * Location class, used to store data about a specific location
+ * in the game.
+ *
+ * @param name location name
+ * @param description location description
+ * @param wantedResource the name of the resource wanted at the location
+ * @param sellingResource the name of the resource sold at the location
+ * @param visited has the location been visited yet
+ * @param traded has the location been traded at yet
+ * @param canMoveEast can the player move East at this location
+ * @param canMoveWest can the player move West at this location
+ * @param canMoveNorth can the player move North at this location
+ * @param canMoveSouth can the player move South at this location
+ *
+ */
 class Location(
     val name: String,
     val description: String,
@@ -37,6 +66,11 @@ class Location(
     var canMoveWest: Boolean = true
 )
 
+/**
+ * Game class, stores data relating to the state of the game, to pass on to the Main Window
+ *
+ * @param
+ */
 class Game {
     private val mapSize = 4
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
@@ -49,7 +83,7 @@ class Game {
     var hasLost = false
 
     //instantiate all the location objects
-    private val start = Location("Start", "The starting square", "Everything", "Cat", visited = true)
+    private val start = Location("Start", "The starting square. 'Come back here with your 16 resources to save your cat' - evil man.", "Everything", "Cat", visited = true)
     private val forest = Location("Forest", "A dark forest", "Coal", "Wood")
     private val farm = Location("Farm", "An old farm", "Wood", "Meat")
     private val castle = Location("Castle", "A large Castle", "Meat", "Torch")
@@ -67,7 +101,7 @@ class Game {
     private val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
     init {
-        //initialize items list
+        //initialise items list
         items.add("Coal")
         items.add("Wood")
         items.add("Meat")
@@ -85,7 +119,7 @@ class Game {
         items.add("Carrots")
 
         //add one random item to inventory
-        val randItem = (0..<items.size).random()
+        val randItem = items.indices.random()
         inventory.add(items[randItem])
         println(inventory)
 
@@ -119,7 +153,9 @@ class Game {
         gameTimer.addActionListener { hasLost = true }
     }
 
-
+    /**
+     * adds one of 3 random mazes to the map, to increase challenge
+     */
     private fun addMaze() {
         val mazeNum = (1..3).random()
         println("Maze: $mazeNum")
@@ -132,6 +168,9 @@ class Game {
         }
     }
 
+    /**
+     * initialises maze 1 by blocking certain paths
+     */
     private fun initMaze1() {
         tiles[0][0]!!.canMoveSouth = false
         tiles[0][1]!!.canMoveSouth = false
@@ -153,6 +192,9 @@ class Game {
         tiles[3][3]!!.canMoveNorth = false
     }
 
+    /**
+     * initialises maze 2 by blocking certain paths
+     */
     private fun initMaze2() {
         tiles[0][1]!!.canMoveSouth = false
         tiles[1][0]!!.canMoveSouth = false
@@ -174,6 +216,9 @@ class Game {
         tiles[3][3]!!.canMoveNorth = false
     }
 
+    /**
+     * initialises maze 3 by blocking certain paths
+     */
     private fun initMaze3() {
         tiles[0][1]!!.canMoveSouth = false
         tiles[0][2]!!.canMoveEast = false
@@ -281,7 +326,6 @@ class Game {
 
     fun checkWin() {
         if (currentLocation == start && inventory.size == 15) {
-            println("WIN")
             hasWon = true
         }
     }
@@ -328,7 +372,7 @@ class MainWindow(private val game: Game) {
     val tickTimer = Timer(882, null)
     val checkTimer = Timer(10, null)
 
-    private val infoWindow = InfoWindow(this, game)      // Pass game state to dialog too
+    private val infoWindow = MinimapWindow(this, game)      // Pass game state to dialogue too
     private val inventoryWindow = InventoryWindow(this, game)
 
 
@@ -505,7 +549,7 @@ class MainWindow(private val game: Game) {
         westButton.isEnabled = game.currentLocation!!.canMoveWest
         southButton.isEnabled = game.currentLocation!!.canMoveSouth
 
-        // Keep child dialog window UIs up-to-date too
+        // Keep child dialogue window UIs up-to-date too
         infoWindow.updateUI()
         inventoryWindow.updateUI()
     }
@@ -519,13 +563,13 @@ class MainWindow(private val game: Game) {
 
 
 /**
- * Info UI window is a child dialog and shows how the
- * app state can be shown / updated from multiple places
+ * Minimap UI window is a child dialogue and shows where in the
+ * map the player is at all times
  *
- * @param owner the parent frame, used to position and layer the dialog correctly
+ * @param owner the parent frame, used to position and layer the dialogue correctly
  * @param game the app state object
  */
-class InfoWindow(private val owner: MainWindow, private val game: Game) {
+class MinimapWindow(private val owner: MainWindow, private val game: Game) {
     private val dialog = JDialog(owner.frame, "MiniMap", false)
     private val panel = JPanel().apply { layout = null }
 
@@ -578,7 +622,6 @@ class InfoWindow(private val owner: MainWindow, private val game: Game) {
         location15Label.setBounds(170, 255, 85, 85)
         location16Label.setBounds(255, 255, 85, 85)
         player.setBounds(0, 0, 25, 25)
-
 
 
         panel.add(location1Label)
@@ -702,6 +745,12 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 }
 
+/**
+ * Intro UI window handles the introduction and instructions of the game
+ * showing the user how to play, and the premise of the game
+ *
+ */
+
 class IntroWindow(private val game: Game, private val window: MainWindow) {
     private val frame = JFrame("INSTRUCTIONS")
     private val panel = JPanel().apply { layout = null }
@@ -781,7 +830,7 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
         continueButton.isVisible = false
         infoLabel.text =
             """<html><wrap>The Evil man has stolen your precious Cat, and will kill it if you do not scour the
-            land to find the 16 resources he wants for his new house in 5 minutes.
+            land to find the 15 resources he wants for his new house and come back in 5 minutes.
         """.trimMargin()
         infoLabel.isVisible = true
         startButton.isVisible = true
