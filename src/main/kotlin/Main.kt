@@ -23,8 +23,8 @@ fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
     val window = MainWindow(game)    // Spawn the UI, passing in the game state
-    val cutscene = IntroWindow(game, window)
-    SwingUtilities.invokeLater { cutscene.start() }
+    val cutscene = IntroWindow(game, window)    // Spawns the Intro UI, passing in the game state, and the Main Window state
+    SwingUtilities.invokeLater { cutscene.start() }     // Start introduction sequence
 }
 
 /**
@@ -69,14 +69,16 @@ class Location(
 /**
  * Game class, stores data relating to the state of the game, to pass on to the Main Window
  *
- * @param
+ *
  */
 class Game {
+    //private properties
     private val mapSize = 4
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
     private val inventory = mutableListOf<String>()
     private val gameTimer = Timer(300000, null)
+
     var currentCoords: Point
     var currentLocation: Location?
     var hasWon = false
@@ -240,10 +242,22 @@ class Game {
         tiles[3][1]!!.canMoveNorth = false
     }
 
+    /**
+     * returns the location object that is located at the point specified by currentCoords
+     *
+     * @return the current location as a Location object
+     */
     private fun getLocation(): Location? {
         return tiles[currentCoords.y][currentCoords.x]
     }
 
+    /**
+     * adds a location to the tiles array to create game map
+     *
+     * @param location location object to be added to the array
+     * @param posX x co-ordinate of the position in the array
+     * @param posY y co-ordinate of the position in the array
+     */
     private fun addLocation(
         location: Location,
         posX: Int = (0..<mapSize).random(),
@@ -252,6 +266,8 @@ class Game {
         var x = posX
         var y = posY
 
+        // check if the proposed index has no location at it, if it doesn't, add it to the array and
+        // block the required directions to contain the map. If it does contain a location, try again
         while (true) {
             if (tiles[y][x] == null) {
                 tiles[y][x] = location
@@ -276,9 +292,15 @@ class Game {
         }
     }
 
+    /**
+     * changes currentCoords to update the players position
+     *
+     * @param direction direction of movement, (N)orth, (S)outh
+     * (E)ast, or (W)est
+     */
     fun move(direction: Char) {
         currentLocation = getLocation()
-
+        // checks direction, and updates currentCoords accordingly
         when (direction) {
             'N' -> if (currentLocation!!.canMoveNorth) {
                 currentCoords.y -= 1
@@ -297,12 +319,17 @@ class Game {
             }
 
         }
+
+        // update the new location's visited status
         currentLocation = getLocation()
         if (!currentLocation!!.visited) {
             currentLocation!!.visited = true
         }
     }
 
+    /**
+     * function that executes a trade if it is possible at that location
+     */
     fun trade() {
         if (canTrade()) {
             inventory.add(currentLocation!!.sellingResource)
@@ -359,7 +386,6 @@ class MainWindow(private val game: Game) {
 
     private val descriptionLabel = JLabel()
     private val tradesLabel = JLabel()
-    private val tradeError = JLabel()
     private val tradeButton = JButton("Trade")
     private val northButton = JButton("^")
     private val southButton = JButton("v")
@@ -392,10 +418,9 @@ class MainWindow(private val game: Game) {
         panel.preferredSize = java.awt.Dimension(500, 350)
 
         nameLabel.setBounds(30, 30, 340, 50)
-        descriptionLabel.setBounds(30, 90, 340, 30)
-        tradesLabel.setBounds(30, 110, 200, 100)
-        tradeButton.setBounds(30, 190, 150, 40)
-        tradeError.setBounds(30, 220, 150, 40)
+        descriptionLabel.setBounds(30, 90, 340, 100)
+        tradesLabel.setBounds(30, 190, 200, 100)
+        tradeButton.setBounds(30, 220, 150, 40)
         northButton.setBounds(300, 150, 40, 40)
         southButton.setBounds(300, 200, 40, 40)
         eastButton.setBounds(350, 175, 40, 40)
@@ -506,15 +531,11 @@ class MainWindow(private val game: Game) {
 
     private fun handleTrade() {
         game.trade()
-        if (!game.currentLocation!!.traded) {
-            tradeError.isVisible = true
-        }
         updateUI()
     }
 
     private fun handleMove(direction: Char) {
         game.move(direction)
-        tradeError.isVisible = false
         updateUI()
 
     }
@@ -536,7 +557,6 @@ class MainWindow(private val game: Game) {
         } else {
             "Traded!"
         }
-        tradeError.text = ("You dont have ${game.currentLocation!!.wantedResource}")
 
         //enable/disable buttons
         tradeButton.isEnabled = if (!game.currentLocation!!.traded) {
