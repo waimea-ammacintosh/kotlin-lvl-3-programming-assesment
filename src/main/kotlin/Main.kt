@@ -254,7 +254,7 @@ class Game {
     /**
      * adds a location to the tiles array to create game map
      *
-     * @param location location object to be added to the array
+     * @param location Location object to be added to the array
      * @param posX x co-ordinate of the position in the array
      * @param posY y co-ordinate of the position in the array
      */
@@ -337,6 +337,11 @@ class Game {
         }
     }
 
+    /**
+     * creates a string that has each item in the players inventory on a new line
+     *
+     * @return current inventory, with each item on an new line
+     */
     fun printInventory(): String {
         val text = buildString {
             inventory.forEachIndexed { _, name ->
@@ -346,21 +351,35 @@ class Game {
         return text
     }
 
+    /**
+     * checks if the player can trade at the current location by checking if they have the correct item to trade
+     *
+     * @return true if they have the required item, false if they dont
+     */
     fun canTrade(): Boolean {
         return currentLocation!!.wantedResource in inventory
 
     }
 
+    /**
+     * checks if the player has reached the win state
+     */
     fun checkWin() {
         if (currentLocation == start && inventory.size == 15) {
             hasWon = true
         }
     }
 
+    /**
+     * stops game timer
+     */
     fun stopTimer() {
         gameTimer.stop()
     }
 
+    /**
+     * starts game timer
+     */
     fun startTimers() {
         gameTimer.start()
     }
@@ -374,16 +393,18 @@ class Game {
  */
 class MainWindow(private val game: Game) {
 
+    // setting up GUI
     val frame = JFrame("GAME")
     private val panel = JPanel().apply { layout = null }
 
+    //creating image icons
     private val timerIcon = ImageIcon(ClassLoader.getSystemResource("images/timer.png")).scaled(100, 340)
     private val knifeIcon = ImageIcon(ClassLoader.getSystemResource("images/knife.png")).scaled(50, 70)
     private val winIcon = ImageIcon(ClassLoader.getSystemResource("images/winscreen.png")).scaled(500, 350)
     private val loseIcon = ImageIcon(ClassLoader.getSystemResource("images/losescreen.png")).scaled(500, 350)
 
+    //creating items to be displayed on GUI
     private var nameLabel = JLabel()
-
     private val descriptionLabel = JLabel()
     private val tradesLabel = JLabel()
     private val tradeButton = JButton("Trade")
@@ -398,7 +419,8 @@ class MainWindow(private val game: Game) {
     val tickTimer = Timer(882, null)
     val checkTimer = Timer(10, null)
 
-    private val infoWindow = MinimapWindow(this, game)      // Pass game state to dialogue too
+    //create and pass game state to child windows
+    private val infoWindow = MinimapWindow(this, game)
     private val inventoryWindow = InventoryWindow(this, game)
 
 
