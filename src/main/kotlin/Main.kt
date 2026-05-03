@@ -102,6 +102,11 @@ class Game {
     private val garden = Location("Garden", "A large garden", "Compost", "Carrots")
     private val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
+    /**
+     * runs on game object creation
+     * creates items list, adds one random item from the list to the players inventory
+     * creates map and adds timer action listener.
+     */
     init {
         //initialise items list
         items.add("Coal")
@@ -340,7 +345,7 @@ class Game {
     /**
      * creates a string that has each item in the players inventory on a new line
      *
-     * @return current inventory, with each item on an new line
+     * @return current inventory, with each item on a new line
      */
     fun printInventory(): String {
         val text = buildString {
@@ -354,7 +359,7 @@ class Game {
     /**
      * checks if the player can trade at the current location by checking if they have the correct item to trade
      *
-     * @return true if they have the required item, false if they dont
+     * @return true if they have the required item, false if they don't
      */
     fun canTrade(): Boolean {
         return currentLocation!!.wantedResource in inventory
@@ -362,7 +367,7 @@ class Game {
     }
 
     /**
-     * checks if the player has reached the win state
+     * checks if the player has reached a win state
      */
     fun checkWin() {
         if (currentLocation == start && inventory.size == 15) {
@@ -403,7 +408,7 @@ class MainWindow(private val game: Game) {
     private val winIcon = ImageIcon(ClassLoader.getSystemResource("images/winscreen.png")).scaled(500, 350)
     private val loseIcon = ImageIcon(ClassLoader.getSystemResource("images/losescreen.png")).scaled(500, 350)
 
-    //creating items to be displayed on GUI
+    //creating elements to be displayed on GUI
     private var nameLabel = JLabel()
     private val descriptionLabel = JLabel()
     private val tradesLabel = JLabel()
@@ -420,25 +425,32 @@ class MainWindow(private val game: Game) {
     val checkTimer = Timer(10, null)
 
     //create and pass game state to child windows
-    private val infoWindow = MinimapWindow(this, game)
-    private val inventoryWindow = InventoryWindow(this, game)
+    val infoWindow = MinimapWindow(this, game)
+    val inventoryWindow = InventoryWindow(this, game)
 
-
+    /**
+     * runs on object instantiation
+     *
+     * sets up window, setting up things like the window layout, styles, and actions.
+     */
     init {
         setupLayout()
         setupStyles()
         setupActions()
         setupWindow()
         updateUI()
-        infoWindow.show()
-        inventoryWindow.show()
+
 
     }
 
-
+    /**
+     * sets up layout of the window, specifying the bounds for all objects, and adds them to the panel.
+     */
     private fun setupLayout() {
+        // set size of panel
         panel.preferredSize = java.awt.Dimension(500, 350)
 
+        // set bounds of all elements
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 100)
         tradesLabel.setBounds(30, 190, 200, 100)
@@ -452,6 +464,7 @@ class MainWindow(private val game: Game) {
         winScreen.setBounds(0, 0, 500, 350)
         loseScreen.setBounds(0, 0, 500, 350)
 
+        //add elements to panel
         panel.add(nameLabel)
         panel.add(descriptionLabel)
         panel.add(tradesLabel)
@@ -464,28 +477,34 @@ class MainWindow(private val game: Game) {
         panel.add(timerLabel)
         panel.add(winScreen)
         panel.add(loseScreen)
-
     }
 
+    /**
+     * set up styles of elements in the window, including fonts, colours and visibility
+     */
     private fun setupStyles() {
+        // fonts
         nameLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
         tradesLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 18)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-
         tradeButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        tradeButton.background = Color(0xcc0055)
-
-
         northButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         southButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         eastButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         westButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
+        // colours
+        tradeButton.background = Color(0xcc0055)
+
+        // visibility
         winScreen.isVisible = false
         loseScreen.isVisible = false
 
     }
 
+    /**
+     * defines key properties of the window
+     */
     private fun setupWindow() {
         frame.isResizable = false                           // Can't resize
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE  // Exit upon window close
@@ -494,32 +513,45 @@ class MainWindow(private val game: Game) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
+    /**
+     * sets up action listeners for timers/buttons
+     */
     private fun setupActions() {
+        //buttons
         tradeButton.addActionListener { handleTrade() }
         northButton.addActionListener { handleMove('N') }
         southButton.addActionListener { handleMove('S') }
         eastButton.addActionListener { handleMove('E') }
         westButton.addActionListener { handleMove('W') }
+        //timers
         tickTimer.addActionListener { handleKnifeMove() }
         checkTimer.addActionListener { handleGameEndCheck() }
     }
 
+    /**
+     * Checks if a game end state has been reached, and updates the UI accordingly
+     */
     private fun handleGameEndCheck() {
-        game.checkWin()
-        //check for game end
+        game.checkWin() //check for game end
+
+        // handle game win
         if (game.hasWon) {
-            stopTimers()
             cleanWindow()
             winScreen.isVisible = true
         }
+
+        // handle game lose
         if (game.hasLost) {
-            stopTimers()
             cleanWindow()
             loseScreen.isVisible = true
         }
     }
 
+    /**
+     * clears window of all elements, and stops timers in preparation of showing a game end screen
+     */
     private fun cleanWindow() {
+        // clear UI
         nameLabel.isVisible = false
         descriptionLabel.isVisible = false
         tradesLabel.isVisible = false
@@ -531,39 +563,50 @@ class MainWindow(private val game: Game) {
         knifeLabel.isVisible = false
         timerLabel.isVisible = false
 
+        //stop timers
+        checkTimer.stop()
+        tickTimer.stop()
+        game.stopTimer()
     }
 
+    /**
+     * starts UI-relevant timers
+     */
     fun startTimers() {
         checkTimer.start()
         tickTimer.start()
 
     }
 
-    private fun stopTimers() {
-        checkTimer.stop()
-        tickTimer.stop()
-        game.stopTimer()
-
-    }
-
+    /**
+     * moves the knife on the timer
+     */
     private fun handleKnifeMove() {
         val y = knifeLabel.y
         knifeLabel.setLocation(450, y + 1)
     }
 
+    /**
+     * handles trading by calling trade function in the game, then updates UI
+     */
     private fun handleTrade() {
         game.trade()
         updateUI()
     }
 
+    /**
+     * handles moving by calling move function in the game, then updates UI
+     */
     private fun handleMove(direction: Char) {
         game.move(direction)
         updateUI()
 
     }
 
+    /**
+     * updates UI so it is up-to-date with current game state
+     */
     private fun updateUI() {
-
         //set texts
         nameLabel.text = game.currentLocation!!.name
         descriptionLabel.text = game.currentLocation!!.description
@@ -596,6 +639,9 @@ class MainWindow(private val game: Game) {
         inventoryWindow.updateUI()
     }
 
+    /**
+     * shows frame
+     */
     fun show() {
         frame.isVisible = true
     }
@@ -738,11 +784,20 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
     }
 }
 
+/**
+ * Inventory Window class. Shows Players current Inventory.
+ *
+ * @param owner parent frame of this Window, used to position and layer the window correctly
+ * @param game the game state
+ */
 class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     private val dialog = JDialog(owner.frame, "Inventory", false)
     private val panel = JPanel().apply { layout = null }
     private val inventoryLabel = JLabel()
 
+    /**
+     * runs on object instantiation, sets up window for display
+     */
     init {
         setupLayout()
         setupStyles()
@@ -750,9 +805,11 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
         updateUI()
     }
 
+    /**
+     * sets up layout of window and elements
+     */
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(200, 450)
-
         inventoryLabel.setBounds(5, 5, 190, 430)
         inventoryLabel.verticalAlignment = JLabel.TOP
         inventoryLabel.horizontalAlignment = JLabel.LEFT
@@ -760,10 +817,16 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
         panel.add(inventoryLabel)
     }
 
+    /**
+     * sets up style of elements
+     */
     private fun setupStyles() {
         inventoryLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
 
+    /**
+     * defines key properties of the window
+     */
     private fun setupWindow() {
         dialog.isResizable = false                              // Can't resize
         dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
@@ -771,12 +834,18 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
         dialog.pack()
     }
 
+    /**
+     * updates UI to show current game state
+     */
     fun updateUI() {
         // Use game properties to display state
         val text = game.printInventory()
         inventoryLabel.text = "<html>${text.replace("\n", "<br>")}</html>"
     }
 
+    /**
+     * shows panel, and sets location relevant to main UI window
+     */
     fun show() {
         val ownerBounds = owner.frame.bounds          // get location of the main window
         dialog.setLocation(                           // Position next to main window
@@ -791,9 +860,12 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
  * Intro UI window handles the introduction and instructions of the game
  * showing the user how to play, and the premise of the game
  *
+ *@param game the game state
+ * @param window main window state
  */
 
 class IntroWindow(private val game: Game, private val window: MainWindow) {
+    // setup window elements
     private val frame = JFrame("INSTRUCTIONS")
     private val panel = JPanel().apply { layout = null }
 
@@ -801,7 +873,9 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     private var continueButton = JButton("Continue")
     private var startButton = JButton("Start")
 
-
+    /**
+     * runs on instantiation, sets up window for use
+     */
     init {
         setupLayout()
         setupStyles()
@@ -810,6 +884,9 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
 
     }
 
+    /**
+     * sets up layout of window, and bounds of elements
+     */
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 250)
 
@@ -824,6 +901,9 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
 
     }
 
+    /**
+     * defines key properties of the window
+     */
     private fun setupWindow() {
         frame.isResizable = false                           // Can't resize
         frame.defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE  // cant close
@@ -832,31 +912,48 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
         frame.setLocationRelativeTo(null)
     }
 
+    /**
+     * sets up fonts and colours of elements
+     */
     private fun setupStyles() {
+        // fonts
         infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         continueButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
         startButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
+
+        //colours
         continueButton.background = Color.DARK_GRAY
         startButton.background = Color.DARK_GRAY
 
     }
 
+    /**
+     * sets up action listeners for buttons
+     */
     private fun setupActions() {
         continueButton.addActionListener { showContext() }
         startButton.addActionListener {
             frame.isVisible = false
             window.show()
+            window.infoWindow.show()
+            window.inventoryWindow.show()
             startTimers()
 
         }
 
     }
 
+    /**
+     * starts all timers for game
+     */
     private fun startTimers() {
         window.startTimers()
         game.startTimers()
     }
 
+    /**
+     * shows instructions to player, and shows continue button to move on to game context
+     */
     private fun showInstructions() {
         startButton.isVisible = false
         infoLabel.text = """<html><wrap>To move, click the arrow button that corresponds to the direction you
@@ -868,6 +965,9 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
 
     }
 
+    /**
+     * shows game context to player, and shows start button to begin the bame
+     */
     private fun showContext() {
         continueButton.isVisible = false
         infoLabel.text =
@@ -878,6 +978,9 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
         startButton.isVisible = true
     }
 
+    /**
+     * shows frame and instructions
+     */
     fun start() {
         frame.isVisible = true
         showInstructions()
