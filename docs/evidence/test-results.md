@@ -76,3 +76,23 @@ The game handled invalid trades as expected, when I executed a invalid trade, no
 
 ---
 
+### Map Generation
+
+I test to see how my game creates and implements random maps.
+
+### Test Data To Use
+
+I generated 3 different maps to test how my program handles map generation, and if it is actually random, and if a random of 3 maze is always implemented
+
+### Test Result
+
+Trial 1: ![map-test1.png](screenshots/map-test1.png)
+
+Trial 2: ![map-test2.png](screenshots/map-test2.png)
+
+Trial 3: ![map-test3.png](screenshots/map-test3.png)
+
+Each Time the map was generated, it was random, apart from start always being at (0,0) as expected, and a random of 3 mazes
+was implemented each time, as expected
+
+---

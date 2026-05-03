@@ -69,4 +69,17 @@ None of these trades should work, the UI should not update, and I should gain no
 
 ---
 
+## Map generation
 
+I will test my map generation algorithm to check if the map generation always works, and if the maze is always implemented correctly.
+
+### Test Data To Use
+
+I will generate 3 different maps and check of all locations have a unique index in the array, and check if the maze is implemented properly.
+
+### Expected Test Result
+
+Every time, I expect all locations to have a unique index, the start location should always be at (0,0), and one of three should be implemented 
+with no complications.
+
+---

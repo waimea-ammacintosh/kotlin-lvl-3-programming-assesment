@@ -966,7 +966,7 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * shows game context to player, and shows start button to begin the bame
+     * shows game context to player, and shows start button to begin the game
      */
     private fun showContext() {
         continueButton.isVisible = false
