@@ -26,26 +26,23 @@ today I decided to implement a maze feature in my game to add a layer of complex
 maze designs off the web to implement into my game, shown in this picture: ![maze ideas](screenshots/maze-ideas.png)
 I then implemented it using this code: ![example maze code](screenshots/maze-init-code.png)
 
-![example.png](screenshots/example.png)
-
 ---
 
 ## Date: 19/04/2026
 
 I fixed the problem where my Inventory window UI seemed to not update. I originally had the window be created in the 
 the main function, but was updating everything in the mainWindow. I changed it so that it was all being handled in
-the MainWindow, and now the UI updates as expected
-
-![example.png](screenshots/example.png)
+the MainWindow, and now the UI updates as expected.
 
 ---
 
-## Date: xx/xx/20xx
+## Date: 04/05/2026
 
-Example description and notes. Example description and notes. Example description and notes. Example description and
-notes. Example description and notes. Example description and notes.
+I was playing around with the UI today, and noticed that on some of the Locations that had a short wantedResource, the trade label would
+not wrap in the way I wanted to, as 'Selling:' was on the same line as 'Wanted:...'. To fix this, I made it so that it would always wrap in 
+the way I want it to.
 
-![example.png](screenshots/example.png)
+![trade-label-fixed.png](screenshots/trade-label-fixed.png)
 
 ---
 

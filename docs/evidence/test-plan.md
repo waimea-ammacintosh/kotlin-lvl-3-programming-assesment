@@ -83,3 +83,17 @@ Every time, I expect all locations to have a unique index, the start location sh
 with no complications.
 
 ---
+
+## End states
+
+I will test my end states. When I win, and when I lose, to check if the correct end screen is shown when the correct end state is reached.
+
+### Test Data To Use
+
+I will win, and then lose, to test the two win states
+
+### Expected Test Result
+
+When the timer runs out, I expect the lose screen to appear, and when I collect all resources and go back to the start, I should see the win screen 
+
+---

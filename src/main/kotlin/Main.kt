@@ -453,12 +453,12 @@ class MainWindow(private val game: Game) {
         // set bounds of all elements
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 100)
-        tradesLabel.setBounds(30, 190, 200, 100)
-        tradeButton.setBounds(30, 220, 150, 40)
-        northButton.setBounds(300, 150, 40, 40)
-        southButton.setBounds(300, 200, 40, 40)
-        eastButton.setBounds(350, 175, 40, 40)
-        westButton.setBounds(250, 175, 40, 40)
+        tradesLabel.setBounds(30, 190, 170, 100)
+        tradeButton.setBounds(30, 270, 150, 40)
+        northButton.setBounds(300, 180, 40, 40)
+        southButton.setBounds(300, 230, 40, 40)
+        eastButton.setBounds(350, 205, 40, 40)
+        westButton.setBounds(250, 205, 40, 40)
         timerLabel.setBounds(395, 5, 100, 340)
         knifeLabel.setBounds(450, -62, 50, 70)
         winScreen.setBounds(0, 0, 500, 350)
@@ -608,11 +608,11 @@ class MainWindow(private val game: Game) {
      */
     private fun updateUI() {
         //set texts
-        nameLabel.text = game.currentLocation!!.name
-        descriptionLabel.text = game.currentLocation!!.description
-        tradesLabel.text = """<html><wrap>Wants: ${game.currentLocation!!.wantedResource}
+        nameLabel.text = "<html><wrap>${game.currentLocation!!.name}"
+        descriptionLabel.text = "<html><wrap>${game.currentLocation!!.description}"
+        tradesLabel.text = """<html>Wants: ${game.currentLocation!!.wantedResource}<br>
             Selling: ${game.currentLocation!!.sellingResource}
-        """.trimMargin()
+        </html>""".trimMargin()
         tradeButton.text = if (!game.currentLocation!!.traded) {
             if (game.canTrade()) {
                 "Trade"
@@ -987,3 +987,25 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
 }
+
+//Time code -v
+
+//class MyApp {
+//    private val timeSource = TimeSource.Monotonic
+//    private var startTimeMark = timeSource.markNow()
+//
+//    private val timer = Timer(1000) {
+//        // Example: update UI every second
+//        val elapsed = getElapsed()
+//        println("Running for: $elapsed")
+//    }
+//
+//    fun startTimer() {
+//        startTimeMark = timeSource.markNow() // Reset start point
+//        timer.start()
+//    }
+//
+//    fun getElapsed(): Duration {
+//        return startTimeMark.elapsedNow() // Directly gives duration since start
+//    }
+//}

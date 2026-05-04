@@ -60,7 +60,7 @@ I had traded at that location.
 
 ### Trading - INVALID
 
-I test to see how my game handles invalid trades, such as trading at a square where you do not have the needed resource, or trying to re-trade
+I tested to see how my game handles invalid trades, such as trading at a square where you do not have the needed resource, or trying to re-trade
 at the same location.
 
 ### Test Data To Use
@@ -94,5 +94,20 @@ Trial 3: ![map-test3.png](screenshots/map-test3.png)
 
 Each Time the map was generated, it was random, apart from start always being at (0,0) as expected, and a random of 3 mazes
 was implemented each time, as expected
+
+---
+
+### End States
+
+I tested to see how my game displays end screens when different end states are reached.
+
+### Test Data To Use
+
+I first lost a game, and then won a game, to test both possible win states
+### Test Result
+
+![trading.gif](screenshots/trading.gif)
+
+The game handled invalid trades as expected, when I executed a invalid trade, no item was added into my inventory, and the UI didn't update.
 
 ---
