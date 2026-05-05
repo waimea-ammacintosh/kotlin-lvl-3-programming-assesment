@@ -97,3 +97,18 @@ I will win, and then lose, to test the two win states
 When the timer runs out, I expect the lose screen to appear, and when I collect all resources and go back to the start, I should see the win screen 
 
 ---
+
+## Score
+
+I will test How my game scores points when the player wins
+
+### Test Data To Use
+
+I will win, and then lose, to test how my game handles both states, and how points are scored
+
+### Expected Test Result
+
+When I lose, I expect the score to be 0. When I win I expect the score to be 300,000 (which is the length of the game timer in milliseconds) minus the 
+time it takes the player to complete the game.
+
+---

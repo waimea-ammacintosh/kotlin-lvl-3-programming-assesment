@@ -104,10 +104,30 @@ I tested to see how my game displays end screens when different end states are r
 ### Test Data To Use
 
 I first lost a game, and then won a game, to test both possible win states
+
 ### Test Result
 
 ![trading.gif](screenshots/trading.gif)
 
 The game handled invalid trades as expected, when I executed a invalid trade, no item was added into my inventory, and the UI didn't update.
+
+---
+
+### Score
+
+I tested to see how my game scores the player when the game ends.
+
+### Test Data To Use
+
+I first lost a game, and then won a game, to test how both ends score
+
+### Test Result
+
+Lose: 
+![lose.gif](screenshots/lose.gif)
+
+As expected, the score displays as 0 when you lose
+
+Win:
 
 ---
