@@ -15,6 +15,11 @@ import java.awt.Font
 import java.awt.Point
 import javax.swing.Timer
 import javax.swing.*
+import kotlin.concurrent.timer
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
+import kotlin.time.TimeMark
 
 /**
  * Application entry point
@@ -76,9 +81,14 @@ class Game {
     private val mapSize = 4
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
-    private val inventory = mutableListOf<String>()
     private val gameTimer = Timer(300000, null)
+    private var timerStart: TimeMark? = null
+    var totalTime: Int? = null
 
+    // inventory list
+    val inventory = mutableListOf<String>()
+
+    // variables
     var currentCoords: Point
     var currentLocation: Location?
     var hasWon = false
@@ -362,7 +372,11 @@ class Game {
      * @return true if they have the required item, false if they don't
      */
     fun canTrade(): Boolean {
-        return currentLocation!!.wantedResource in inventory
+        return if (inventory.size == 15) {
+            false
+        } else {
+            currentLocation!!.wantedResource in inventory
+        }
 
     }
 
@@ -376,16 +390,18 @@ class Game {
     }
 
     /**
-     * stops game timer
+     * stops game timer and calculates how long timer has been running for score
      */
     fun stopTimer() {
         gameTimer.stop()
+        totalTime = timerStart?.elapsedNow()?.toInt(DurationUnit.MILLISECONDS)
     }
 
     /**
-     * starts game timer
+     * starts game timer and notes start time for scoring
      */
     fun startTimers() {
+        timerStart = TimeSource.Monotonic.markNow()
         gameTimer.start()
     }
 }
@@ -412,6 +428,7 @@ class MainWindow(private val game: Game) {
     private var nameLabel = JLabel()
     private val descriptionLabel = JLabel()
     private val tradesLabel = JLabel()
+    private val scoreLabel = JLabel()
     private val tradeButton = JButton("Trade")
     private val northButton = JButton("^")
     private val southButton = JButton("v")
@@ -421,6 +438,8 @@ class MainWindow(private val game: Game) {
     private val knifeLabel = JLabel(knifeIcon)
     private val winScreen = JLabel(winIcon)
     private val loseScreen = JLabel(loseIcon)
+
+    // create timers
     val tickTimer = Timer(882, null)
     val checkTimer = Timer(10, null)
 
@@ -454,6 +473,7 @@ class MainWindow(private val game: Game) {
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 100)
         tradesLabel.setBounds(30, 190, 170, 100)
+        scoreLabel.setBounds(30, 300,300,40)
         tradeButton.setBounds(30, 270, 150, 40)
         northButton.setBounds(300, 180, 40, 40)
         southButton.setBounds(300, 230, 40, 40)
@@ -468,6 +488,7 @@ class MainWindow(private val game: Game) {
         panel.add(nameLabel)
         panel.add(descriptionLabel)
         panel.add(tradesLabel)
+        panel.add(scoreLabel)
         panel.add(tradeButton)
         panel.add(northButton)
         panel.add(southButton)
@@ -487,6 +508,7 @@ class MainWindow(private val game: Game) {
         nameLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
         tradesLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 18)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        scoreLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         tradeButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         northButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         southButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
@@ -499,6 +521,7 @@ class MainWindow(private val game: Game) {
         // visibility
         winScreen.isVisible = false
         loseScreen.isVisible = false
+        scoreLabel.isVisible = false
 
     }
 
@@ -537,13 +560,17 @@ class MainWindow(private val game: Game) {
         // handle game win
         if (game.hasWon) {
             cleanWindow()
+            scoreLabel.text = "Score: ${game.totalTime}"
             winScreen.isVisible = true
+            scoreLabel.isVisible = true
         }
 
         // handle game lose
         if (game.hasLost) {
             cleanWindow()
+            scoreLabel.text = "Score: 0"
             loseScreen.isVisible = true
+            scoreLabel.isVisible = true
         }
     }
 
@@ -809,7 +836,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
      * sets up layout of window and elements
      */
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(200, 450)
+        panel.preferredSize = java.awt.Dimension(200, 480)
         inventoryLabel.setBounds(5, 5, 190, 430)
         inventoryLabel.verticalAlignment = JLabel.TOP
         inventoryLabel.horizontalAlignment = JLabel.LEFT
@@ -840,7 +867,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     fun updateUI() {
         // Use game properties to display state
         val text = game.printInventory()
-        inventoryLabel.text = "<html>${text.replace("\n", "<br>")}</html>"
+        inventoryLabel.text = "<html>${text.replace("\n", "<br>")}<br>Items Gathered: ${game.inventory.size}</html>"
     }
 
     /**
@@ -987,25 +1014,3 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
 }
-
-//Time code -v
-
-//class MyApp {
-//    private val timeSource = TimeSource.Monotonic
-//    private var startTimeMark = timeSource.markNow()
-//
-//    private val timer = Timer(1000) {
-//        // Example: update UI every second
-//        val elapsed = getElapsed()
-//        println("Running for: $elapsed")
-//    }
-//
-//    fun startTimer() {
-//        startTimeMark = timeSource.markNow() // Reset start point
-//        timer.start()
-//    }
-//
-//    fun getElapsed(): Duration {
-//        return startTimeMark.elapsedNow() // Directly gives duration since start
-//    }
-//}
