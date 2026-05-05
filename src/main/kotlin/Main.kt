@@ -77,13 +77,15 @@ class Location(
  *
  */
 class Game {
+
+
     //private properties
     private val mapSize = 4
     private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
-    private val gameTimer = Timer(300000, null)
+    private val gameTimer = Timer(500000, null)
     private var timerStart: TimeMark? = null
-    var totalTime: Int? = null
+
 
     // inventory list
     val inventory = mutableListOf<String>()
@@ -93,6 +95,8 @@ class Game {
     var currentLocation: Location?
     var hasWon = false
     var hasLost = false
+    var totalTime: Int? = null
+    var score: Int = 0
 
     //instantiate all the location objects
     private val start = Location("Start", "The starting square. 'Come back here with your 16 resources to save your cat' - evil man.", "Everything", "Cat", visited = true)
@@ -270,8 +274,8 @@ class Game {
      * adds a location to the tiles array to create game map
      *
      * @param location Location object to be added to the array
-     * @param posX x co-ordinate of the position in the array
-     * @param posY y co-ordinate of the position in the array
+     * @param posX x co-ordinate of the position in the array (generated randomly unless specified)
+     * @param posY y co-ordinate of the position in the array (generated randomly unless specified)
      */
     private fun addLocation(
         location: Location,
@@ -395,6 +399,7 @@ class Game {
     fun stopTimer() {
         gameTimer.stop()
         totalTime = timerStart?.elapsedNow()?.toInt(DurationUnit.MILLISECONDS)
+        score = 300000 - totalTime!!
     }
 
     /**
@@ -474,6 +479,7 @@ class MainWindow(private val game: Game) {
         descriptionLabel.setBounds(30, 90, 340, 100)
         tradesLabel.setBounds(30, 190, 170, 100)
         scoreLabel.setBounds(30, 300,300,40)
+        scoreLabel.horizontalAlignment = JLabel.LEFT
         tradeButton.setBounds(30, 270, 150, 40)
         northButton.setBounds(300, 180, 40, 40)
         southButton.setBounds(300, 230, 40, 40)
@@ -560,7 +566,7 @@ class MainWindow(private val game: Game) {
         // handle game win
         if (game.hasWon) {
             cleanWindow()
-            scoreLabel.text = "Score: ${game.totalTime}"
+            scoreLabel.text = "Score: ${game.score}"
             winScreen.isVisible = true
             scoreLabel.isVisible = true
         }
@@ -837,7 +843,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
      */
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(200, 480)
-        inventoryLabel.setBounds(5, 5, 190, 430)
+        inventoryLabel.setBounds(5, 5, 190, 470)
         inventoryLabel.verticalAlignment = JLabel.TOP
         inventoryLabel.horizontalAlignment = JLabel.LEFT
 

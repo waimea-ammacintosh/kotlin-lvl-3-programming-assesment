@@ -46,12 +46,16 @@ the way I want it to.
 
 ---
 
-## Date: xx/xx/20xx
+## Date: 05/05/2026
 
-Example description and notes. Example description and notes. Example description and notes. Example description and
-notes. Example description and notes. Example description and notes.
+Today I added a score feature, that works by taking the time when the game starts, and when the timer ends, and subtracting the difference from 
+300,000 (the length of the game timer) to give a score, and If you lose, the score is 0. 
 
-![example.png](screenshots/example.png)
+Win:
+![win-score.png](screenshots/win-score.png)
+
+Lose:
+![lose-score.png](screenshots/lose-score.png)
 
 ---
 
