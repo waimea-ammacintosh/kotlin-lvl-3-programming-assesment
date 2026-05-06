@@ -56,7 +56,7 @@ fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
  * @param canMoveSouth can the player move South at this location
  *
  */
-class Location(
+data class Location(
     val name: String,
     val description: String,
     val wantedResource: String,
@@ -73,20 +73,20 @@ class Location(
  *
  */
 class Game {
-
-
-    //private properties
+    //map properties/list
     val mapSize = 4
     val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
+
+    //private properties
     private val items = mutableListOf<String>()
     private val gameTimer = Timer(300000, null)
     private var timerStart: TimeMark? = null
 
 
-    // inventory list
+    //inventory list
     val inventory = mutableListOf<String>()
 
-    // variables
+    //variables
     var currentCoords: Point
     var currentLocation: Location?
     var hasWon = false
@@ -141,7 +141,7 @@ class Game {
         println(inventory)
 
 
-        // add locations to tiles list
+        //add locations to tiles list
         addLocation(start, 0, 0)
         addLocation(forest)
         addLocation(farm)
@@ -159,7 +159,7 @@ class Game {
         addLocation(garden)
         addLocation(mine)
 
-        //set current location
+        //set current location to start
         currentCoords = Point(0, 0)
         currentLocation = getLocation()
 
@@ -259,8 +259,8 @@ class Game {
         var x = posX
         var y = posY
 
-        // check if the proposed index has no location at it, if it doesn't, add it to the array and
-        // block the required directions to contain the map. If it does contain a location, try again
+        //check if the proposed index has no location at it, if it doesn't, add it to the array and
+        //block the required directions to contain the map. If it does contain a location, try again
         while (true) {
             if (tiles[y][x] == null) {
                 tiles[y][x] = location
@@ -293,7 +293,8 @@ class Game {
      */
     fun move(direction: Char) {
         currentLocation = getLocation()
-        // checks direction, and updates currentCoords accordingly
+        //checks direction, and updates currentCoords accordingly, can't have an invalid input, as
+        //invalid direction buttons are disabled.
         when (direction) {
             'N' ->  currentCoords.y -= 1
 
@@ -304,6 +305,8 @@ class Game {
             'W' -> currentCoords.x -= 1
 
         }
+
+        //set new current location
         currentLocation = getLocation()
     }
 
@@ -359,10 +362,9 @@ class Game {
      */
     fun stopTimer() {
         gameTimer.stop()
+        //calculate score as gameTimer length - elapsed time in milliseconds
         totalTime = timerStart?.elapsedNow()?.toInt(DurationUnit.MILLISECONDS)
-        println()
-        println(totalTime)
-        score = 300000 - totalTime!!
+        score = gameTimer.delay - totalTime!!
     }
 
     /**

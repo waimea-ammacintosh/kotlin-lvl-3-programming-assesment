@@ -217,3 +217,20 @@ I performed a variety of valid moves along all 4 boundaries of the map to test h
 The minimap updated as expected, the icon moved in the correct direction along, to, and from the boundary.
 
 ---
+
+### Minimap - Invalid
+
+I tested to see how the minimap updates when a variety of invalid moves are performed.
+
+### Test Data To Use
+
+I tried to move through multiple maze walls, and out of the map boundary multiple times.
+
+### Test Result
+
+![minimap-invalid.gif](screenshots/minimap-invalid.gif)
+
+As expected, the minimap did not update when an invalid move was performed, in both trying to move out of the map, and through
+a maze wall.
+
+---

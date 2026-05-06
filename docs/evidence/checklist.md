@@ -48,10 +48,10 @@ The program has been tested and there is documented evidence that:
   - [x] player movement
   - [x] other player actions
   - [x] scoring (if any)
-  - [ ] player win / lose states
+  - [x] player win / lose states
   - [ ] final feedback (if appropriate)
 - [x] **Valid (expected) data** has been used to test **all data inputs**
-- [ ] Where tests have failed, **fixes** are discussed and **tests re-run**
+- [x] Where tests have failed, **fixes** are discussed and **tests re-run**
 
 ---
 
@@ -86,17 +86,17 @@ The game GUI:
 
 The program code is well-commented:
 - [x] **JavaDoc Block comments** are used at the top of each **file** and **function**
-- [ ] Comments accurately describe the **function and behaviour** of the code:
+- [x] Comments accurately describe the **function and behaviour** of the code:
   - [x] Defining the **purpose** of functions / key blocks of code
-  - [ ] Explaining the **reason** (the '**why**') of key parts of the code
+  - [x] Explaining the **reason** (the '**why**') of key parts of the code
   - [x] Defining function **parameters** and/or **return values**
 
 ### Program Testing
 
 The program has been tested using:
 - [x] A test plan **prepared in advance** of the coding
-- [ ] A test plan that **defines test data values** to be used
-- [ ] Test values that cover **boundary** (limit / edge) cases
+- [x] A test plan that **defines test data values** to be used
+- [x] Test values that cover **boundary** (limit / edge) cases
 
 ---
 
@@ -126,12 +126,12 @@ The game GUI:
 ### Program Documentation
 
 The program code:
-- [ ] Code is laid-out and organised **logically and concisely**
+- [x] Code is laid-out and organised **logically and concisely**
 
 ### Program Testing
 
 The program has been tested to be **robust**:
-- [ ] With a **comprehensive and thorough** test plan
-- [ ] Testing **regularly** throughput development, allowing **time for debugging**
-- [ ] Using test values that cover **invalid** (unexpected) cases
-- [ ] Resulting in a program that **copes appropriately** with invalid inputs
+- [x] With a **comprehensive and thorough** test plan
+- [x] Testing **regularly** throughput development, allowing **time for debugging**
+- [x] Using test values that cover **invalid** (unexpected) cases
+- [x] Resulting in a program that **copes appropriately** with invalid inputs

@@ -169,17 +169,17 @@ I chose to move. It should also update correctly when going to, and coming off t
 
 ---
 
-## Minimap - INVALID - untested - not in test-results
+## Minimap - INVALID
 
-I will test How items are added into my inventory during a trade.
+I will test how my minimap updates when invalid inputs are provided by the user..
 
 ### Test Data To Use
 
-I will execute 3 trades, to see how items are added to my inventory list.
+I will try go out of the boundary, and through a map wall multiple times.
 
 ### Expected Test Result
 
-When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+No invalid move should update the position of the player on the minimap.
 
 ---
 
