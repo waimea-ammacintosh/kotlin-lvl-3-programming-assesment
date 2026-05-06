@@ -15,8 +15,6 @@ import java.awt.Font
 import java.awt.Point
 import javax.swing.Timer
 import javax.swing.*
-import kotlin.concurrent.timer
-import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
 import kotlin.time.TimeMark
@@ -24,6 +22,7 @@ import kotlin.time.TimeMark
 /**
  * Application entry point
  */
+
 fun main() {
     FlatMacDarkLaf.setup()                // Initialise the LAF
     val game = Game()                     // Get a game state object
@@ -50,7 +49,6 @@ fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
  * @param description location description
  * @param wantedResource the name of the resource wanted at the location
  * @param sellingResource the name of the resource sold at the location
- * @param visited has the location been visited yet
  * @param traded has the location been traded at yet
  * @param canMoveEast can the player move East at this location
  * @param canMoveWest can the player move West at this location
@@ -63,7 +61,6 @@ class Location(
     val description: String,
     val wantedResource: String,
     val sellingResource: String,
-    var visited: Boolean = false,
     var traded: Boolean = false,
     var canMoveNorth: Boolean = true,
     var canMoveSouth: Boolean = true,
@@ -74,16 +71,15 @@ class Location(
 /**
  * Game class, stores data relating to the state of the game, to pass on to the Main Window
  *
- *
  */
 class Game {
 
 
     //private properties
-    private val mapSize = 4
-    private val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
+    val mapSize = 4
+    val tiles: Array<Array<Location?>> = Array(mapSize) { Array(mapSize) { null } }
     private val items = mutableListOf<String>()
-    private val gameTimer = Timer(500000, null)
+    private val gameTimer = Timer(300000, null)
     private var timerStart: TimeMark? = null
 
 
@@ -99,7 +95,7 @@ class Game {
     var score: Int = 0
 
     //instantiate all the location objects
-    private val start = Location("Start", "The starting square. 'Come back here with your 16 resources to save your cat' - evil man.", "Everything", "Cat", visited = true)
+    private val start = Location("Start", "The starting square. 'Come back here with your 16 resources to save your cat' - evil man.", "Everything", "Cat")
     private val forest = Location("Forest", "A dark forest", "Coal", "Wood")
     private val farm = Location("Farm", "An old farm", "Wood", "Meat")
     private val castle = Location("Castle", "A large Castle", "Meat", "Torch")
@@ -167,98 +163,76 @@ class Game {
         currentCoords = Point(0, 0)
         currentLocation = getLocation()
 
-        //adds one of three random mazes to the area
-        addMaze()
-
-        //adds action listener to timer
-        gameTimer.addActionListener { hasLost = true }
-    }
-
-    /**
-     * adds one of 3 random mazes to the map, to increase challenge
-     */
-    private fun addMaze() {
+        //adds one of three random mazes to the area by blocking certain paths
         val mazeNum = (1..3).random()
         println("Maze: $mazeNum")
         when (mazeNum) {
-            1 -> initMaze1()
+            1 -> {
+                tiles[0][0]!!.canMoveSouth = false
+                tiles[0][1]!!.canMoveSouth = false
+                tiles[0][2]!!.canMoveSouth = false
+                tiles[1][0]!!.canMoveNorth = false
+                tiles[1][0]!!.canMoveSouth = false
+                tiles[1][1]!!.canMoveNorth = false
+                tiles[1][1]!!.canMoveSouth = false
+                tiles[1][2]!!.canMoveNorth = false
+                tiles[1][2]!!.canMoveEast = false
+                tiles[1][3]!!.canMoveWest = false
+                tiles[2][0]!!.canMoveNorth = false
+                tiles[2][0]!!.canMoveSouth = false
+                tiles[2][1]!!.canMoveNorth = false
+                tiles[2][1]!!.canMoveEast = false
+                tiles[2][2]!!.canMoveWest = false
+                tiles[2][3]!!.canMoveSouth = false
+                tiles[3][0]!!.canMoveNorth = false
+                tiles[3][3]!!.canMoveNorth = false
+            }
 
-            2 -> initMaze2()
+            2 -> {
+                tiles[0][1]!!.canMoveSouth = false
+                tiles[1][0]!!.canMoveSouth = false
+                tiles[1][1]!!.canMoveNorth = false
+                tiles[1][1]!!.canMoveEast = false
+                tiles[1][2]!!.canMoveWest = false
+                tiles[1][2]!!.canMoveEast = false
+                tiles[1][3]!!.canMoveSouth = false
+                tiles[1][3]!!.canMoveWest = false
+                tiles[2][0]!!.canMoveNorth = false
+                tiles[2][1]!!.canMoveEast = false
+                tiles[2][2]!!.canMoveWest = false
+                tiles[2][3]!!.canMoveSouth = false
+                tiles[2][3]!!.canMoveNorth = false
+                tiles[3][0]!!.canMoveEast = false
+                tiles[3][1]!!.canMoveWest = false
+                tiles[3][1]!!.canMoveEast = false
+                tiles[3][2]!!.canMoveWest = false
+                tiles[3][3]!!.canMoveNorth = false
+            }
 
-            3 -> initMaze3()
+            3 -> {
+                tiles[0][1]!!.canMoveSouth = false
+                tiles[0][2]!!.canMoveEast = false
+                tiles[0][3]!!.canMoveWest = false
+                tiles[1][0]!!.canMoveSouth = false
+                tiles[1][1]!!.canMoveNorth = false
+                tiles[1][1]!!.canMoveEast = false
+                tiles[1][1]!!.canMoveSouth = false
+                tiles[1][2]!!.canMoveWest = false
+                tiles[1][3]!!.canMoveSouth = false
+                tiles[2][0]!!.canMoveNorth = false
+                tiles[2][1]!!.canMoveNorth = false
+                tiles[2][1]!!.canMoveSouth = false
+                tiles[2][2]!!.canMoveEast = false
+                tiles[2][3]!!.canMoveNorth = false
+                tiles[2][3]!!.canMoveWest = false
+                tiles[3][0]!!.canMoveEast = false
+                tiles[3][1]!!.canMoveWest = false
+                tiles[3][1]!!.canMoveNorth = false
+            }
         }
-    }
 
-    /**
-     * initialises maze 1 by blocking certain paths
-     */
-    private fun initMaze1() {
-        tiles[0][0]!!.canMoveSouth = false
-        tiles[0][1]!!.canMoveSouth = false
-        tiles[0][2]!!.canMoveSouth = false
-        tiles[1][0]!!.canMoveNorth = false
-        tiles[1][0]!!.canMoveSouth = false
-        tiles[1][1]!!.canMoveNorth = false
-        tiles[1][1]!!.canMoveSouth = false
-        tiles[1][2]!!.canMoveNorth = false
-        tiles[1][2]!!.canMoveEast = false
-        tiles[1][3]!!.canMoveWest = false
-        tiles[2][0]!!.canMoveNorth = false
-        tiles[2][0]!!.canMoveSouth = false
-        tiles[2][1]!!.canMoveNorth = false
-        tiles[2][1]!!.canMoveEast = false
-        tiles[2][2]!!.canMoveWest = false
-        tiles[2][3]!!.canMoveSouth = false
-        tiles[3][0]!!.canMoveNorth = false
-        tiles[3][3]!!.canMoveNorth = false
-    }
-
-    /**
-     * initialises maze 2 by blocking certain paths
-     */
-    private fun initMaze2() {
-        tiles[0][1]!!.canMoveSouth = false
-        tiles[1][0]!!.canMoveSouth = false
-        tiles[1][1]!!.canMoveNorth = false
-        tiles[1][1]!!.canMoveEast = false
-        tiles[1][2]!!.canMoveWest = false
-        tiles[1][2]!!.canMoveEast = false
-        tiles[1][3]!!.canMoveSouth = false
-        tiles[1][3]!!.canMoveWest = false
-        tiles[2][0]!!.canMoveNorth = false
-        tiles[2][1]!!.canMoveEast = false
-        tiles[2][2]!!.canMoveWest = false
-        tiles[2][3]!!.canMoveSouth = false
-        tiles[2][3]!!.canMoveNorth = false
-        tiles[3][0]!!.canMoveEast = false
-        tiles[3][1]!!.canMoveWest = false
-        tiles[3][1]!!.canMoveEast = false
-        tiles[3][2]!!.canMoveWest = false
-        tiles[3][3]!!.canMoveNorth = false
-    }
-
-    /**
-     * initialises maze 3 by blocking certain paths
-     */
-    private fun initMaze3() {
-        tiles[0][1]!!.canMoveSouth = false
-        tiles[0][2]!!.canMoveEast = false
-        tiles[0][3]!!.canMoveWest = false
-        tiles[1][0]!!.canMoveSouth = false
-        tiles[1][1]!!.canMoveNorth = false
-        tiles[1][1]!!.canMoveEast = false
-        tiles[1][1]!!.canMoveSouth = false
-        tiles[1][2]!!.canMoveWest = false
-        tiles[1][3]!!.canMoveSouth = false
-        tiles[2][0]!!.canMoveNorth = false
-        tiles[2][1]!!.canMoveNorth = false
-        tiles[2][1]!!.canMoveSouth = false
-        tiles[2][2]!!.canMoveEast = false
-        tiles[2][3]!!.canMoveNorth = false
-        tiles[2][3]!!.canMoveWest = false
-        tiles[3][0]!!.canMoveEast = false
-        tiles[3][1]!!.canMoveWest = false
-        tiles[3][1]!!.canMoveNorth = false
+        //add action listener to timer
+        gameTimer.addActionListener { hasLost = true }
     }
 
     /**
@@ -321,29 +295,16 @@ class Game {
         currentLocation = getLocation()
         // checks direction, and updates currentCoords accordingly
         when (direction) {
-            'N' -> if (currentLocation!!.canMoveNorth) {
-                currentCoords.y -= 1
-            }
+            'N' ->  currentCoords.y -= 1
 
-            'S' -> if (currentLocation!!.canMoveSouth) {
-                currentCoords.y += 1
-            }
+            'S' -> currentCoords.y += 1
 
-            'E' -> if (currentLocation!!.canMoveEast) {
-                currentCoords.x += 1
-            }
+            'E' -> currentCoords.x += 1
 
-            'W' -> if (currentLocation!!.canMoveWest) {
-                currentCoords.x -= 1
-            }
+            'W' -> currentCoords.x -= 1
 
         }
-
-        // update the new location's visited status
         currentLocation = getLocation()
-        if (!currentLocation!!.visited) {
-            currentLocation!!.visited = true
-        }
     }
 
     /**
@@ -399,6 +360,8 @@ class Game {
     fun stopTimer() {
         gameTimer.stop()
         totalTime = timerStart?.elapsedNow()?.toInt(DurationUnit.MILLISECONDS)
+        println()
+        println(totalTime)
         score = 300000 - totalTime!!
     }
 
@@ -449,7 +412,7 @@ class MainWindow(private val game: Game) {
     val checkTimer = Timer(10, null)
 
     //create and pass game state to child windows
-    val infoWindow = MinimapWindow(this, game)
+    val minimapWindow = MinimapWindow(this, game)
     val inventoryWindow = InventoryWindow(this, game)
 
     /**
@@ -668,7 +631,7 @@ class MainWindow(private val game: Game) {
         southButton.isEnabled = game.currentLocation!!.canMoveSouth
 
         // Keep child dialogue window UIs up-to-date too
-        infoWindow.updateUI()
+        minimapWindow.updateUI()
         inventoryWindow.updateUI()
     }
 
@@ -714,13 +677,36 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
     private val location16Label = JLabel()
     private val player = JLabel(playerIcon)
 
+    var labelList = mutableListOf<JLabel>()
+
+
 
     init {
         setupLayout()
+        setupList()
         setupStyles()
-        setupActions()
         setupWindow()
         updateUI()
+    }
+
+    private fun setupList() {
+        labelList.add(location1Label)
+        labelList.add(location2Label)
+        labelList.add(location3Label)
+        labelList.add(location4Label)
+        labelList.add(location5Label)
+        labelList.add(location6Label)
+        labelList.add(location7Label)
+        labelList.add(location8Label)
+        labelList.add(location9Label)
+        labelList.add(location10Label)
+        labelList.add(location11Label)
+        labelList.add(location12Label)
+        labelList.add(location13Label)
+        labelList.add(location14Label)
+        labelList.add(location15Label)
+        labelList.add(location16Label)
+
     }
 
     private fun setupLayout() {
@@ -792,19 +778,17 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
         dialog.pack()
     }
 
-    private fun setupActions() {
-
-    }
-
 
     fun updateUI() {
+
         // Use game properties to display state
         val x = game.currentCoords.x
-        val newX = (x + 1) * 85
-        val y = game.currentCoords.x
-        val newY = (y + 1) * 85
-        player.setLocation(newX, newY)
+        val playerX = (85 * x) + 30
 
+        val y = game.currentCoords.y
+        val playerY = (85 * y) + 30
+
+        player.setLocation(playerX, playerY)
     }
 
     fun show() {
@@ -968,7 +952,7 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
         startButton.addActionListener {
             frame.isVisible = false
             window.show()
-            window.infoWindow.show()
+            window.minimapWindow.show()
             window.inventoryWindow.show()
             startTimers()
 

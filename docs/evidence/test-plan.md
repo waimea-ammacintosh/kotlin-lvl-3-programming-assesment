@@ -24,10 +24,23 @@ When I click a valid button, I should move in that direction.
 
 ---
 
-## Moving - BOUNDARY/INVALID
+## Moving - BOUNDARY - refilm
 
-I will test to see how my program handles moving in invalid directions (i.e. outside the map or through a wall) and how if I can move in expected 
-ways along the boundaries of the map.
+I will test to see how my program handles movement on the boundary.
+
+### Test Data To Use
+
+I will try going to each boundary, to check if I can move to the boundary, away from the boundary, and along the boundaries.
+
+### Expected Test Result
+
+I should be able to move normally going to and from the boundary and along the boundaries.
+
+---
+
+## Moving - INVALID
+
+I will test to see how my program handles moving in invalid directions (i.e. outside the map or through a wall) 
 
 ### Test Data To Use
 
@@ -69,7 +82,7 @@ None of these trades should work, the UI should not update, and I should gain no
 
 ---
 
-## Map generation
+## Map generation - GAME MECHANIC
 
 I will test my map generation algorithm to check if the map generation always works, and if the maze is always implemented correctly.
 
@@ -84,7 +97,7 @@ with no complications.
 
 ---
 
-## End states
+## End states - GAME MECHANIC
 
 I will test my end states. When I win, and when I lose, to check if the correct end screen is shown when the correct end state is reached.
 
@@ -98,7 +111,7 @@ When the timer runs out, I expect the lose screen to appear, and when I collect 
 
 ---
 
-## Score
+## Score - GAME MECHANIC
 
 I will test How my game scores points when the player wins
 
@@ -110,5 +123,75 @@ I will win, and then lose, to test how my game handles both states, and how poin
 
 When I lose, I expect the score to be 0. When I win I expect the score to be 300,000 (which is the length of the game timer in milliseconds) minus the 
 time it takes the player to complete the game.
+
+---
+
+## Inventory - GAMEPLAY - untested - not in test-results
+
+I will test How items are added into my inventory during a trade.
+
+### Test Data To Use
+
+I will execute 3 trades, to see how items are added to my inventory list.
+
+### Expected Test Result
+
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list, and the total items gathered to .
+
+---
+
+## Minimap - VALID - untested - not in test-results
+
+I will test How items are added into my inventory during a trade.
+
+### Test Data To Use
+
+I will execute 3 trades, to see how items are added to my inventory list.
+
+### Expected Test Result
+
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+
+---
+
+## Minimap - Boundary - untested - not in test-results
+
+I will test How items are added into my inventory during a trade.
+
+### Test Data To Use
+
+I will execute 3 trades, to see how items are added to my inventory list.
+
+### Expected Test Result
+
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+
+---
+
+## Minimap - INVALID - untested - not in test-results
+
+I will test How items are added into my inventory during a trade.
+
+### Test Data To Use
+
+I will execute 3 trades, to see how items are added to my inventory list.
+
+### Expected Test Result
+
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+
+---
+
+## Trade - BOUNDARY - untested - not in test-results
+
+I will test if how my game handles trading on the edge of the map.
+
+### Test Data To Use
+
+I will execute 3 trades on the map boundary, to see how items are added to my inventory list.
+
+### Expected Test Result
+
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
 
 ---

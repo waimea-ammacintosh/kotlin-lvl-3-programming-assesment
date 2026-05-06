@@ -21,23 +21,36 @@ button, I moved.
 
 ---
 
-### Moving - BOUNDARY/INVALID
+## Moving - BOUNDARY
 
-I tested to see how my program handles moving in invalid directions (i.e. outside the map or through a wall) and how if
-I can move in expected
-ways along the boundaries of the map.
+I tested to see how movement along and to the boundary are possible in my game.
 
 ### Test Data To Use
 
-I moved along a 3 different boundary squares, and then tried to move out of the map 2 times, and through a maze wall 2
+I moved to and from each boundary, and along each boundary to check if boundary moves work.
+
+### Test Result
+
+![move-boundary.gif](screenshots/move-boundary.gif)
+
+Movement along the boundary worked as expected, I could move to, from and along the boundary without any mishaps.
+
+---
+
+### Moving - INVALID
+
+I tested to see how my program handles moving in invalid directions (i.e. outside the map or through a wall)
+
+### Test Data To Use
+
+I tried to move out of the map 2 times, and through a maze wall 2
 times.
 
 ### Test Result
 
 ![moving-invalid.gif](screenshots/moving-invalid.gif)
 
-The movement was just as expected. I could move perfectly along the border, but I could not move out of the map, or
-through a wall
+The movement was just as expected. I could not move out of the map, or through a wall
 
 ---
 
@@ -76,7 +89,7 @@ The game handled invalid trades as expected, when I executed a invalid trade, no
 
 ---
 
-### Map Generation
+### Map Generation - GAME MECHANIC
 
 I test to see how my game creates and implements random maps.
 
@@ -97,7 +110,7 @@ was implemented each time, as expected
 
 ---
 
-### End States
+### End States - GAME MECHANIC
 
 I tested to see how my game displays end screens when different end states are reached.
 
@@ -113,7 +126,7 @@ The game handled invalid trades as expected, when I executed a invalid trade, no
 
 ---
 
-### Score
+### Score - GAME MECHANIC
 
 I tested to see how my game scores the player when the game ends.
 
@@ -129,5 +142,28 @@ Lose:
 As expected, the score displays as 0 when you lose
 
 Win:
+![score-win.gif](screenshots/score-win.gif)
+
+the time elapsed is: 
+![time-elapsed.png](screenshots/time-elapsed.png)
+
+and 79251 + 220749 = 300,000 which is the total timer length, so scoring works
+
+---
+
+### Inventory - GAMEPLAY
+
+I tested how items are added into my inventory during a trade.
+
+### Test Data To Use
+
+I executed 3 valid trades, to test how items are added to my inventory, and how items gathered on the UI is updated.
+
+### Test Result
+
+![trading.gif](screenshots/trading.gif)
+
+The trading worked as expected, when I executed a valid trade, it added the item into my inventory, and updated to show that
+I had traded at that location.
 
 ---
