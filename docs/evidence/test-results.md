@@ -4,6 +4,14 @@ The test results show the actual outcome of the testing, following the [Test Pla
 
 ---
 
+## Maps:
+
+Each map is randomly generated, with one of three possible mazes:
+
+![maze-ideas.png](screenshots/maze-ideas.png)
+
+---
+
 ## Moving - VALID
 
 I tested to see if valid moves are possible in my game.
@@ -31,7 +39,7 @@ I moved to and from each boundary, and along each boundary to check if boundary 
 
 ### Test Result
 
-![move-boundary.gif](screenshots/move-boundary.gif)
+![minimap-boundary.gif](screenshots/minimap-boundary.gif)
 
 Movement along the boundary worked as expected, I could move to, from and along the boundary without any mishaps.
 
@@ -85,7 +93,7 @@ game would handle invalid trades.
 
 ![trading.gif](screenshots/trading.gif)
 
-The game handled invalid trades as expected, when I executed a invalid trade, no item was added into my inventory, and the UI didn't update.
+The game handled invalid trades as expected, when I executed an invalid trade, no item was added into my inventory, and the UI didn't update.
 
 ---
 
@@ -120,9 +128,13 @@ I first lost a game, and then won a game, to test both possible win states
 
 ### Test Result
 
-![trading.gif](screenshots/trading.gif)
+Win:
+![win.gif](screenshots/win.gif)
 
-The game handled invalid trades as expected, when I executed a invalid trade, no item was added into my inventory, and the UI didn't update.
+Lose:
+![lose.gif](screenshots/lose.gif)
+
+The game shows the correct win screen for both win and lose situations, just as expected.
 
 ---
 
@@ -161,9 +173,47 @@ I executed 3 valid trades, to test how items are added to my inventory, and how 
 
 ### Test Result
 
-![trading.gif](screenshots/trading.gif)
+![inventory.gif](screenshots/inventory.gif)
 
-The trading worked as expected, when I executed a valid trade, it added the item into my inventory, and updated to show that
-I had traded at that location.
+Adding items to the inventory after a trade worked as expected. The correct Item was added when a trade was executed, and the total items
+counter increased by one each time.
+
+---
+
+### Minimap - VALID
+
+I tested to see how the minimap updates when a variety of valid moves are executed
+
+### Test Data To Use
+
+I executed 3 valid trades, to test how items are added to my inventory, and how items gathered on the UI is updated.
+
+### Test Result
+
+![minimap-valid-broken.gif](screenshots/minimap-valid-broken.gif)
+
+When I moved, the minimap did not update in the expected way. It would move diagonally when moved left or right, and would 
+not move when I moved up or down. From this result, I looked over my code, and found an error, and after I fixed the error,
+it worked:
+
+![minimap-valid-fixed.gif](screenshots/minimap-valid-fixed.gif)
+
+Now the minimap updates as expected, and moves in the correct direction.
+
+---
+
+### Minimap - BOUNDARY
+
+I tested to see how the minimap updates when a variety of moves are executed along the boundary of the map
+
+### Test Data To Use
+
+I performed a variety of valid moves along all 4 boundaries of the map to test how the Minimap UI updated.
+
+### Test Result
+
+![minimap-boundary.gif](screenshots/minimap-boundary.gif)
+
+The minimap updated as expected, the icon moved in the correct direction along, to, and from the boundary.
 
 ---

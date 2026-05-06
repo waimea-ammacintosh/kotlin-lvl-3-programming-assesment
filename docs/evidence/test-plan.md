@@ -24,7 +24,7 @@ When I click a valid button, I should move in that direction.
 
 ---
 
-## Moving - BOUNDARY - refilm
+## Moving - BOUNDARY
 
 I will test to see how my program handles movement on the boundary.
 
@@ -40,7 +40,7 @@ I should be able to move normally going to and from the boundary and along the b
 
 ## Moving - INVALID
 
-I will test to see how my program handles moving in invalid directions (i.e. outside the map or through a wall) 
+I will test to see how my program handles moving in invalid directions (i.e. outside the map or through a wall).
 
 ### Test Data To Use
 
@@ -103,21 +103,21 @@ I will test my end states. When I win, and when I lose, to check if the correct 
 
 ### Test Data To Use
 
-I will win, and then lose, to test the two win states
+I will win, and then lose, to test the two win states.
 
 ### Expected Test Result
 
-When the timer runs out, I expect the lose screen to appear, and when I collect all resources and go back to the start, I should see the win screen 
+When the timer runs out, I expect the lose screen to appear, and when I collect all resources and go back to the start, I should see the win screen.
 
 ---
 
 ## Score - GAME MECHANIC
 
-I will test How my game scores points when the player wins
+I will test How my game scores points when the player wins.
 
 ### Test Data To Use
 
-I will win, and then lose, to test how my game handles both states, and how points are scored
+I will win, and then lose, to test how my game handles both states, and how points are scored.
 
 ### Expected Test Result
 
@@ -126,7 +126,7 @@ time it takes the player to complete the game.
 
 ---
 
-## Inventory - GAMEPLAY - untested - not in test-results
+## Inventory - GAMEPLAY
 
 I will test How items are added into my inventory during a trade.
 
@@ -136,35 +136,36 @@ I will execute 3 trades, to see how items are added to my inventory list.
 
 ### Expected Test Result
 
-When I execute a trade, I expect the item I traded for to be displayed in the inventory list, and the total items gathered to .
+When I execute a trade, I expect the item I traded for to be displayed in the inventory list, and the total items gathered to increase by one.
 
 ---
 
-## Minimap - VALID - untested - not in test-results
+## Minimap - VALID
 
-I will test How items are added into my inventory during a trade.
+I will test how the minimap updates when a valid move is executed.
 
 ### Test Data To Use
 
-I will execute 3 trades, to see how items are added to my inventory list.
+I will perform a variety of valid moves and see how the minimap updates in relation to those moves.
 
 ### Expected Test Result
 
-When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+When I move, the player Icon on the minimap should move in the same direction as I moved.
 
 ---
 
-## Minimap - Boundary - untested - not in test-results
+## Minimap - BOUNDARY
 
-I will test How items are added into my inventory during a trade.
+I will test how the minimap updates when moving along the boundary.
 
 ### Test Data To Use
 
-I will execute 3 trades, to see how items are added to my inventory list.
+I will move around the boundary of the map a variety of times and see how the minimap updates
 
 ### Expected Test Result
 
-When I execute a trade, I expect the item I traded for to be displayed in the inventory list.
+When I move along the boundary, the player icon should move in the correct direction that corresponds to the direction
+I chose to move. It should also update correctly when going to, and coming off the boundary.
 
 ---
 
