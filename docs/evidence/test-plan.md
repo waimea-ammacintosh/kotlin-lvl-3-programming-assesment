@@ -183,13 +183,13 @@ No invalid move should update the position of the player on the minimap.
 
 ---
 
-## Trade - BOUNDARY - untested - not in test-results
+## Trade - BOUNDARY
 
 I will test if how my game handles trading on the edge of the map.
 
 ### Test Data To Use
 
-I will execute 3 trades on the map boundary, to see how items are added to my inventory list.
+I will execute 3 trades on the map boundary, to see how items are added to my inventory list when on map boundary.
 
 ### Expected Test Result
 

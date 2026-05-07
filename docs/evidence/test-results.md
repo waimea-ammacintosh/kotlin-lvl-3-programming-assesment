@@ -79,6 +79,23 @@ I had traded at that location.
 
 ---
 
+### Trading - BOUNDARY
+
+I test to see if I can trade for an item when I have an item that a square wants, i.e. a valid trade, and on the boundary of the map.
+
+### Test Data To Use
+
+I executed various trades on the boundary of the map.
+
+### Test Result
+
+![trading-boundary.gif](screenshots/trading-boundary.gif)
+
+The trading worked as expected, when I executed a valid trade on the boundary, it added the item into my inventory,
+and updated to show that I had traded at that location.
+
+---
+
 ### Trading - INVALID
 
 I tested to see how my game handles invalid trades, such as trading at a square where you do not have the needed resource, or trying to re-trade

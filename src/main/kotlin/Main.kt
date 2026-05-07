@@ -95,7 +95,7 @@ class Game {
     var score: Int = 0
 
     //instantiate all the location objects
-    private val start = Location("Start", "The starting square. 'Come back here with your 16 resources to save your cat' - evil man.", "Everything", "Cat")
+    private val start = Location("Start", "The starting square. 'Come back here with your 15 resources to save your cat' - evil man.", "Everything", "Cat")
     private val forest = Location("Forest", "A dark forest", "Coal", "Wood")
     private val farm = Location("Farm", "An old farm", "Wood", "Meat")
     private val castle = Location("Castle", "A large Castle", "Meat", "Torch")
@@ -828,8 +828,8 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
      * sets up layout of window and elements
      */
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(200, 480)
-        inventoryLabel.setBounds(5, 5, 190, 470)
+        panel.preferredSize = java.awt.Dimension(230, 490)
+        inventoryLabel.setBounds(5, 5, 220, 480)
         inventoryLabel.verticalAlignment = JLabel.TOP
         inventoryLabel.horizontalAlignment = JLabel.LEFT
 
@@ -859,7 +859,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     fun updateUI() {
         // Use game properties to display state
         val text = game.printInventory()
-        inventoryLabel.text = "<html>${text.replace("\n", "<br>")}<br>Items Gathered: ${game.inventory.size}</html>"
+        inventoryLabel.text = "<html>${text.replace("\n", "<br>")}<br>Items Gathered: ${game.inventory.size}<br> ${if (game.inventory.size == 15){"ALL ITEMS GATHERED"} else{""}}</html>"
     }
 
     /**
