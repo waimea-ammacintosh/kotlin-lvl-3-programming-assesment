@@ -171,7 +171,7 @@ I chose to move. It should also update correctly when going to, and coming off t
 
 ## Minimap - INVALID
 
-I will test how my minimap updates when invalid inputs are provided by the user..
+I will test how my minimap updates when invalid inputs are provided by the user.
 
 ### Test Data To Use
 

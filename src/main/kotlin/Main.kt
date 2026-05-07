@@ -1,13 +1,13 @@
-/*************************************************************
- *
- * Save the Cat
- *
- * A game made for NCEA level 3 A.S. 91906
- *
- * By: Aaron Macintosh
- *
- * Date:
- *************************************************************/
+/**
+ * =====================================================================
+ * Programming Project for NCEA Level 3, Standard 91906
+ * ---------------------------------------------------------------------
+ * Project Name:   Save The Cat
+ * Project Author: Aaron Macintosh
+ * GitHub Repo:    https://github.com/waimea-ammacintosh/kotlin-lvl-3-programming-assesment
+ * ---------------------------------------------------------------------
+ * =====================================================================
+ */
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Color
@@ -20,7 +20,7 @@ import kotlin.time.TimeSource
 import kotlin.time.TimeMark
 
 /**
- * Application entry point
+ * Application entry point.
  */
 
 fun main() {
@@ -45,15 +45,15 @@ fun ImageIcon.scaled(width: Int, height: Int): ImageIcon =
  * Location class, used to store data about a specific location
  * in the game.
  *
- * @param name location name
- * @param description location description
- * @param wantedResource the name of the resource wanted at the location
- * @param sellingResource the name of the resource sold at the location
- * @param traded has the location been traded at yet
- * @param canMoveEast can the player move East at this location
- * @param canMoveWest can the player move West at this location
- * @param canMoveNorth can the player move North at this location
- * @param canMoveSouth can the player move South at this location
+ * @param name location name.
+ * @param description location description.
+ * @param wantedResource the name of the resource wanted at the location.
+ * @param sellingResource the name of the resource sold at the location.
+ * @param traded has the location been traded at yet.
+ * @param canMoveEast can the player move East at this location.
+ * @param canMoveWest can the player move West at this location.
+ * @param canMoveNorth can the player move North at this location.
+ * @param canMoveSouth can the player move South at this location.
  *
  */
 data class Location(
@@ -69,7 +69,7 @@ data class Location(
 )
 
 /**
- * Game class, stores data relating to the state of the game, to pass on to the Main Window
+ * Game class, stores data relating to the state of the game, to pass on to the Main Window.
  *
  */
 class Game {
@@ -108,12 +108,13 @@ class Game {
     private val knightsHouse = Location("Knight's House", "The house of the local Knight", "Armor", "Tapestry")
     private val museum = Location("Museum", "A large museum", "Tapestry", "Fossil")
     private val apothecary = Location("Apothecary", "An apothecary", "Fossil", "Herbs")
-    private val composter = Location("Composter", "A big Compost Pile", "Herbs", "Compost")
-    private val garden = Location("Garden", "A large garden", "Compost", "Carrots")
+    private val composter = Location("Composter", "A big Pile of Compost", "Herbs", "Compost")
+    private val garden = Location("Garden", "A vast garden", "Compost", "Carrots")
     private val mine = Location("Mine", "A deep mine", "Carrots", "Coal")
 
     /**
-     * runs on game object creation
+     * runs on game object instantiation.
+     *
      * creates items list, adds one random item from the list to the players inventory
      * creates map and adds timer action listener.
      */
@@ -138,7 +139,6 @@ class Game {
         //add one random item to inventory
         val randItem = items.indices.random()
         inventory.add(items[randItem])
-        println(inventory)
 
 
         //add locations to tiles list
@@ -165,7 +165,6 @@ class Game {
 
         //adds one of three random mazes to the area by blocking certain paths
         val mazeNum = (1..3).random()
-        println("Maze: $mazeNum")
         when (mazeNum) {
             1 -> {
                 tiles[0][0]!!.canMoveSouth = false
@@ -236,20 +235,20 @@ class Game {
     }
 
     /**
-     * returns the location object that is located at the point specified by currentCoords
+     * returns the location object that is located at the point specified by currentCoords.
      *
-     * @return the current location as a Location object
+     * @return the current location as a Location object.
      */
     private fun getLocation(): Location? {
         return tiles[currentCoords.y][currentCoords.x]
     }
 
     /**
-     * adds a location to the tiles array to create game map
+     * adds a location to the tiles array to create game map.
      *
-     * @param location Location object to be added to the array
-     * @param posX x co-ordinate of the position in the array (generated randomly unless specified)
-     * @param posY y co-ordinate of the position in the array (generated randomly unless specified)
+     * @param location Location object to be added to the array.
+     * @param posX x co-ordinate of the position in the array (generated randomly unless specified).
+     * @param posY y co-ordinate of the position in the array (generated randomly unless specified).
      */
     private fun addLocation(
         location: Location,
@@ -276,7 +275,6 @@ class Game {
                 if (x == mapSize - 1) {
                     location.canMoveEast = false
                 }
-                println("${location.name} is at $x $y")
                 break
             } else {
                 x = (0..<mapSize).random()
@@ -286,10 +284,10 @@ class Game {
     }
 
     /**
-     * changes currentCoords to update the players position
+     * changes currentCoords to update the players position.
      *
      * @param direction direction of movement, (N)orth, (S)outh
-     * (E)ast, or (W)est
+     * (E)ast, or (W)est.
      */
     fun move(direction: Char) {
         currentLocation = getLocation()
@@ -311,7 +309,7 @@ class Game {
     }
 
     /**
-     * function that executes a trade if it is possible at that location
+     * Executes a trade if it is possible at that location.
      */
     fun trade() {
         if (canTrade()) {
@@ -321,9 +319,9 @@ class Game {
     }
 
     /**
-     * creates a string that has each item in the players inventory on a new line
+     * creates a string that has each item in the players inventory on a new line.
      *
-     * @return current inventory, with each item on a new line
+     * @return current inventory, with each item on a new line.
      */
     fun printInventory(): String {
         val text = buildString {
@@ -335,9 +333,9 @@ class Game {
     }
 
     /**
-     * checks if the player can trade at the current location by checking if they have the correct item to trade
+     * checks if the player can trade at the current location by checking if they have the correct item to trade.
      *
-     * @return true if they have the required item, false if they don't
+     * @return true if they have the required item, false if they don't.
      */
     fun canTrade(): Boolean {
         return if (inventory.size == 15) {
@@ -349,7 +347,7 @@ class Game {
     }
 
     /**
-     * checks if the player has reached a win state
+     * checks if the player has reached a win state.
      */
     fun checkWin() {
         if (currentLocation == start && inventory.size == 15) {
@@ -358,7 +356,7 @@ class Game {
     }
 
     /**
-     * stops game timer and calculates how long timer has been running for score
+     * stops game timer and calculates how long timer has been running for score.
      */
     fun stopTimer() {
         gameTimer.stop()
@@ -368,9 +366,9 @@ class Game {
     }
 
     /**
-     * starts game timer and notes start time for scoring
+     * starts game timer and notes start time for scoring.
      */
-    fun startTimers() {
+    fun startTimer() {
         timerStart = TimeSource.Monotonic.markNow()
         gameTimer.start()
     }
@@ -380,7 +378,7 @@ class Game {
 /**
  * Main UI window, handles user clicks, etc.
  *
- * @param game the game state object
+ * @param game the game state object.
  */
 class MainWindow(private val game: Game) {
 
@@ -418,7 +416,7 @@ class MainWindow(private val game: Game) {
     val inventoryWindow = InventoryWindow(this, game)
 
     /**
-     * runs on object instantiation
+     * runs on object instantiation.
      *
      * sets up window, setting up things like the window layout, styles, and actions.
      */
@@ -439,7 +437,7 @@ class MainWindow(private val game: Game) {
         // set size of panel
         panel.preferredSize = java.awt.Dimension(500, 350)
 
-        // set bounds of all elements
+        // set bounds/alignments of all elements
         nameLabel.setBounds(30, 30, 340, 50)
         descriptionLabel.setBounds(30, 90, 340, 100)
         tradesLabel.setBounds(30, 190, 170, 100)
@@ -472,7 +470,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * set up styles of elements in the window, including fonts, colours and visibility
+     * set up styles of elements in the window, including fonts, colours and visibility.
      */
     private fun setupStyles() {
         // fonts
@@ -487,7 +485,7 @@ class MainWindow(private val game: Game) {
         westButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
         // colours
-        tradeButton.background = Color(0xcc0055)
+        tradeButton.background = Color(0x013220)
 
         // visibility
         winScreen.isVisible = false
@@ -497,7 +495,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * defines key properties of the window
+     * defines key properties of the window.
      */
     private fun setupWindow() {
         frame.isResizable = false                           // Can't resize
@@ -508,22 +506,22 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * sets up action listeners for timers/buttons
+     * sets up action listeners for timers/buttons.
      */
     private fun setupActions() {
-        //buttons
+        //button actions
         tradeButton.addActionListener { handleTrade() }
         northButton.addActionListener { handleMove('N') }
         southButton.addActionListener { handleMove('S') }
         eastButton.addActionListener { handleMove('E') }
         westButton.addActionListener { handleMove('W') }
-        //timers
+        //timer actions
         tickTimer.addActionListener { handleKnifeMove() }
         checkTimer.addActionListener { handleGameEndCheck() }
     }
 
     /**
-     * Checks if a game end state has been reached, and updates the UI accordingly
+     * Checks if a game end state has been reached, and updates the UI accordingly.
      */
     private fun handleGameEndCheck() {
         game.checkWin() //check for game end
@@ -546,7 +544,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * clears window of all elements, and stops timers in preparation of showing a game end screen
+     * clears window of all elements, and stops timers in preparation of showing a game end screen.
      */
     private fun cleanWindow() {
         // clear UI
@@ -568,7 +566,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * starts UI-relevant timers
+     * starts UI-relevant timers.
      */
     fun startTimers() {
         checkTimer.start()
@@ -577,7 +575,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * moves the knife on the timer
+     * moves the knife down the screen.
      */
     private fun handleKnifeMove() {
         val y = knifeLabel.y
@@ -585,7 +583,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * handles trading by calling trade function in the game, then updates UI
+     * handles trading by calling trade function in the game, then updates UI.
      */
     private fun handleTrade() {
         game.trade()
@@ -593,7 +591,9 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * handles moving by calling move function in the game, then updates UI
+     * handles moving by calling move function in the game, then updates UI.
+     *
+     * @param direction direction of movement.
      */
     private fun handleMove(direction: Char) {
         game.move(direction)
@@ -602,7 +602,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * updates UI so it is up-to-date with current game state
+     * updates UI so it is up-to-date with current game state.
      */
     private fun updateUI() {
         //set texts
@@ -638,7 +638,7 @@ class MainWindow(private val game: Game) {
     }
 
     /**
-     * shows frame
+     * shows frame.
      */
     fun show() {
         frame.isVisible = true
@@ -650,17 +650,17 @@ class MainWindow(private val game: Game) {
 
 /**
  * Minimap UI window is a child dialogue and shows where in the
- * map the player is at all times
+ * map the player is at all times.
  *
  * @param owner the parent frame, used to position and layer the dialogue correctly
  * @param game the app state object
  */
 class MinimapWindow(private val owner: MainWindow, private val game: Game) {
+    //create panel
     private val dialog = JDialog(owner.frame, "MiniMap", false)
     private val panel = JPanel().apply { layout = null }
-
+    //create elements
     private val playerIcon = ImageIcon(ClassLoader.getSystemResource("images/player.png")).scaled(25, 25)
-
     private val location1Label = JLabel()
     private val location2Label = JLabel()
     private val location3Label = JLabel()
@@ -679,41 +679,24 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
     private val location16Label = JLabel()
     private val player = JLabel(playerIcon)
 
-    var labelList = mutableListOf<JLabel>()
 
-
-
+    /**
+     * runs on object instantiation, sets up window.
+     */
     init {
         setupLayout()
-        setupList()
         setupStyles()
         setupWindow()
         updateUI()
     }
 
-    private fun setupList() {
-        labelList.add(location1Label)
-        labelList.add(location2Label)
-        labelList.add(location3Label)
-        labelList.add(location4Label)
-        labelList.add(location5Label)
-        labelList.add(location6Label)
-        labelList.add(location7Label)
-        labelList.add(location8Label)
-        labelList.add(location9Label)
-        labelList.add(location10Label)
-        labelList.add(location11Label)
-        labelList.add(location12Label)
-        labelList.add(location13Label)
-        labelList.add(location14Label)
-        labelList.add(location15Label)
-        labelList.add(location16Label)
-
-    }
-
+    /**
+     * sets bounds for elements, and window.
+     */
     private fun setupLayout() {
+        //set panel size
         panel.preferredSize = java.awt.Dimension(340, 340)
-
+        //set label bounds
         location1Label.setBounds(0, 0, 85, 85)
         location2Label.setBounds(85, 0, 85, 85)
         location3Label.setBounds(170, 0, 85, 85)
@@ -732,7 +715,7 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
         location16Label.setBounds(255, 255, 85, 85)
         player.setBounds(0, 0, 25, 25)
 
-
+        //and add them to the panel
         panel.add(location1Label)
         panel.add(location2Label)
         panel.add(location3Label)
@@ -754,7 +737,11 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
 
     }
 
+    /**
+     * sets up styles for elements on the GUI panel.
+     */
     private fun setupStyles() {
+        //set borders for location labels
         location1Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
         location2Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
         location3Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
@@ -773,6 +760,9 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
         location16Label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3))
     }
 
+    /**
+     * sets up important aspects of the window.
+     */
     private fun setupWindow() {
         dialog.isResizable = false                              // Can't resize
         dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
@@ -780,7 +770,9 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
         dialog.pack()
     }
 
-
+    /**
+     * updates UI to reflect game state.
+     */
     fun updateUI() {
 
         // Use game properties to display state
@@ -793,6 +785,9 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
         player.setLocation(playerX, playerY)
     }
 
+    /**
+     * shows window, and sets relative position to owner window.
+     */
     fun show() {
         val ownerBounds = owner.frame.bounds          // get location of the main window
         dialog.setLocation(                           // Position next to main window
@@ -810,12 +805,13 @@ class MinimapWindow(private val owner: MainWindow, private val game: Game) {
  * @param game the game state
  */
 class InventoryWindow(private val owner: MainWindow, private val game: Game) {
+    //window/
     private val dialog = JDialog(owner.frame, "Inventory", false)
     private val panel = JPanel().apply { layout = null }
     private val inventoryLabel = JLabel()
 
     /**
-     * runs on object instantiation, sets up window for display
+     * runs on object instantiation, sets up window for display.
      */
     init {
         setupLayout()
@@ -825,7 +821,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 
     /**
-     * sets up layout of window and elements
+     * sets up layout of window and elements.
      */
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(230, 490)
@@ -837,14 +833,14 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 
     /**
-     * sets up style of elements
+     * sets up style of elements.
      */
     private fun setupStyles() {
         inventoryLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
 
     /**
-     * defines key properties of the window
+     * defines key properties of the window.
      */
     private fun setupWindow() {
         dialog.isResizable = false                              // Can't resize
@@ -854,7 +850,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 
     /**
-     * updates UI to show current game state
+     * updates UI to show current game state.
      */
     fun updateUI() {
         // Use game properties to display state
@@ -863,7 +859,7 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
     }
 
     /**
-     * shows panel, and sets location relevant to main UI window
+     * shows panel, and sets location relevant to main UI window.
      */
     fun show() {
         val ownerBounds = owner.frame.bounds          // get location of the main window
@@ -877,23 +873,23 @@ class InventoryWindow(private val owner: MainWindow, private val game: Game) {
 
 /**
  * Intro UI window handles the introduction and instructions of the game
- * showing the user how to play, and the premise of the game
+ * showing the user how to play, and the premise of the game.
  *
- *@param game the game state
- * @param window main window state
+ *@param game the game state.
+ * @param window main window state.
  */
 
 class IntroWindow(private val game: Game, private val window: MainWindow) {
-    // setup window elements
+    // setup window elements and window
     private val frame = JFrame("INSTRUCTIONS")
     private val panel = JPanel().apply { layout = null }
 
-    private var infoLabel = JLabel()
+    private var infoLabel = JLabel("",JLabel.CENTER)
     private var continueButton = JButton("Continue")
     private var startButton = JButton("Start")
 
     /**
-     * runs on instantiation, sets up window for use
+     * runs on instantiation, sets up window for use.
      */
     init {
         setupLayout()
@@ -904,16 +900,16 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * sets up layout of window, and bounds of elements
+     * sets up layout of window, and bounds of elements.
      */
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 250)
-
-
-        infoLabel.setBounds(5, 5, 390, 200)
+        //panel dimensions
+        panel.preferredSize = java.awt.Dimension(410, 250)
+        //element bounds
+        infoLabel.setBounds(10, 10, 390, 120)
         continueButton.setBounds(260, 200, 100, 40)
         startButton.setBounds(260, 200, 90, 40)
-
+        //add them to the panel
         panel.add(infoLabel)
         panel.add(continueButton)
         panel.add(startButton)
@@ -921,7 +917,7 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * defines key properties of the window
+     * defines key properties of the window.
      */
     private fun setupWindow() {
         frame.isResizable = false                           // Can't resize
@@ -932,11 +928,13 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * sets up fonts and colours of elements
+     * sets up fonts and colours of elements.
      */
     private fun setupStyles() {
         // fonts
         infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        infoLabel.setHorizontalAlignment(SwingConstants.CENTER)
+        infoLabel.setVerticalAlignment(SwingConstants.CENTER)
         continueButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
         startButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
 
@@ -947,11 +945,12 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * sets up action listeners for buttons
+     * sets up action listeners for buttons.
      */
     private fun setupActions() {
         continueButton.addActionListener { showContext() }
         startButton.addActionListener {
+            //starts main game by starting timers and showing/hiding relevant windows
             frame.isVisible = false
             window.show()
             window.minimapWindow.show()
@@ -963,15 +962,15 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * starts all timers for game
+     * starts all timers for game.
      */
     private fun startTimers() {
         window.startTimers()
-        game.startTimers()
+        game.startTimer()
     }
 
     /**
-     * shows instructions to player, and shows continue button to move on to game context
+     * shows instructions to player, and shows continue button to move on to game context.
      */
     private fun showInstructions() {
         startButton.isVisible = false
@@ -985,7 +984,7 @@ class IntroWindow(private val game: Game, private val window: MainWindow) {
     }
 
     /**
-     * shows game context to player, and shows start button to begin the game
+     * shows game context to player, and shows start button to begin the game.
      */
     private fun showContext() {
         continueButton.isVisible = false

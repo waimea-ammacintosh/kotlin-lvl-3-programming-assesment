@@ -12,9 +12,9 @@ The development log captures key moments in your application development:
 
 ## Date: 25/03/2026
 
-Today I managed to finalize my map generation. Initially I had problems with how the map was generating, as multiple
+Today I managed to finalise my map generation. Initially I had problems with how the map was generating, as multiple
 locations could be put on the same tile of the locations array, so it would never work. However, I refined my generation
-function to be much simpler by adding a co-ordinate system for setting up the map. This also meant that I could initialize
+function to be much simpler by adding a co-ordinate system for setting up the map. This also meant that I could initialise
 the starting square in a similar fashion, and is now much simpler
 ![map generation code](screenshots/map-generation.png)
 
@@ -30,7 +30,7 @@ I then implemented it using this code: ![example maze code](screenshots/maze-ini
 
 ## Date: 19/04/2026
 
-I fixed the problem where my Inventory window UI seemed to not update. I originally had the window be created in the 
+I fixed the problem where my Inventory window UI seemed to not update. I originally had the window be created in 
 the main function, but was updating everything in the mainWindow. I changed it so that it was all being handled in
 the MainWindow, and now the UI updates as expected.
 
@@ -48,8 +48,8 @@ the way I want it to.
 
 ## Date: 05/05/2026
 
-Today I added a score feature, that works by taking the time when the game starts, and when the timer ends, and subtracting the difference from 
-300,000 (the length of the game timer) to give a score, and If you lose, the score is 0. 
+Today I added a score feature. It works by taking the time when the game starts, and when the timer ends, and subtracting the difference from 
+the length of the game timer to give a score. If you lose, the score is 0. 
 
 Win:
 ![win-score.png](screenshots/win-score.png)

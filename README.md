@@ -4,10 +4,9 @@ by Aaron Macintosh
 
 ## Project Description
 
-Save the Cat is an adventure-style game, where you must save
-your cat from the evil king who stole your cat, and will not give
-it back unless you scour the land, looking for exotic materials
-for his new house.
+Save the Cat is an adventure-style game, where you must save your cat from the evil man who stole your cat. He will not give
+it back unless you scour the land, looking for exotic materials for his new house.
+But beware, if you do not come back in 5 minutes, he will kill it!
 
 ---
 
@@ -27,12 +26,8 @@ The project is written in the [Kotlin](https://kotlinlang.org) programming langu
 **complex programming techniques**:
 
 - Programming a graphical user interface (GUI)
-- Reading from, or writing to, files
 - Object-oriented programming (OOP) classes and objects
 - Self-defined types
 - Using non-core API, library or framework
-- Using complex data structures (e.g. stacks, queues, trees)
-
-**EDIT LIST ABOVE TO MATCH YOUR PROJECT**
 
 
